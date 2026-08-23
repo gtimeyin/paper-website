@@ -1,0 +1,20 @@
+name: Refresh Field Notes
+
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+
+jobs:
+  redeploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger a fresh Vercel build
+        env:
+          VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$VERCEL_DEPLOY_HOOK_URL" ]; then
+            echo "Add VERCEL_DEPLOY_HOOK_URL as a GitHub Actions secret."
+            exit 1
+          fi
+          curl --fail --silent --show-error --request POST "$VERCEL_DEPLOY_HOOK_URL"

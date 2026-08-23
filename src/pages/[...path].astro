@@ -1,0 +1,28 @@
+---
+import PortfolioApp from "../components/PortfolioApp.astro";
+import { getSubstackPosts } from "../lib/substack";
+import { STATIC_ROUTES } from "../lib/site-routes";
+
+export async function getStaticPaths() {
+  const legacyRoutes = [
+    "field-notes/ai-isnt-making-me-dumb",
+    "field-notes/the-second-brain-problem",
+  ];
+  const routes = STATIC_ROUTES.filter((path) => path !== "/").map((path) => path.slice(1));
+
+  const substackPosts = await getSubstackPosts();
+  const fieldNoteRoutes = substackPosts.length
+    ? substackPosts.map((post) => post.path.replace(/^\//, ""))
+    : [
+        "field-notes/ai-isnt-making-me-dumb",
+        "field-notes/the-second-brain-problem",
+      ];
+
+  const feedAliases = substackPosts.flatMap((post) => post.aliases.map((path) => path.slice(1)));
+
+  return [...new Set([...routes, ...legacyRoutes, ...fieldNoteRoutes, ...feedAliases])]
+    .map((path) => ({ params: { path } }));
+}
+---
+
+<PortfolioApp />

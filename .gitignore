@@ -13,10 +13,13 @@
 # testing
 /coverage
 
-# next.js
+# Astro
+/.astro/
+/dist/
+
+# Legacy build caches from the previous app
 /.next/
 /.vinext/
-/out/
 
 # misc
 .DS_Store
@@ -34,7 +37,6 @@ yarn-error.log*
 # vercel
 .vercel
 
-/dist/
 /.wrangler/
 /outputs/
 /work/

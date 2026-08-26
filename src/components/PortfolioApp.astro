@@ -172,7 +172,8 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
     background:var(--paper);
     box-shadow:0 1px 3px rgba(0,0,0,.2),0 20px 48px rgba(0,0,0,.36);
     overflow-y:auto; overflow-x:hidden;
-    scroll-behavior:smooth;
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
   }
   /* a sheet sitting behind another is dimmer and inert */
   .sheet.back{background:var(--paper-back); filter:brightness(.985)}
@@ -203,7 +204,7 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
   /* the wordmark is a signature, sized to sit on the same baseline as the nav */
   .sig-mark{
     font-family:var(--script); font-size:clamp(26px,2.05vw,33px); line-height:1.1;
-    color:var(--ink); margin-right:10px; transform:translateY(3px);
+    color:var(--ink); margin-right:clamp(22px,2.2vw,36px); transform:translateY(3px);
     padding-bottom:2px; white-space:nowrap;
   }
   button.lbl,a.lbl{background:none;border:0;padding:0;cursor:pointer;
@@ -269,10 +270,22 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
 
   /* ---------- reading ---------- */
   .byline{font-family:var(--util);font-size:11.5px;color:var(--ink-soft);margin:24px 0 0}
-  #read h1.display{margin-top:clamp(40px,7vh,84px)}
+  #read h1.display,#read2 h1.display{margin-top:clamp(40px,7vh,84px)}
   .prose{max-width:33em; margin:44px 0 0 clamp(0px,11vw,260px);
     font-size:clamp(16px,1.2vw,20px); line-height:1.74; color:#33383b}
   .prose p{margin:0 0 1.5em}
+  .prose code{font-family:var(--util); font-size:.84em; padding:.12em .32em;
+    border:1px solid var(--rule); background:rgba(23,25,27,.025)}
+  .prose pre{overflow-x:auto; margin:1.8em 0 2.2em; padding:20px;
+    border:1px solid var(--rule); background:rgba(23,25,27,.025);
+    font-family:var(--util); font-size:12px; line-height:1.65; color:var(--ink-mid)}
+  .prose pre code{padding:0; border:0; background:none; font-size:inherit}
+  .prose table{width:min(790px,52vw); margin:1.8em 0 2.2em; border-collapse:collapse;
+    font-size:14px; line-height:1.55}
+  .prose th,.prose td{padding:13px 14px; border:1px solid var(--rule); text-align:left;
+    vertical-align:top}
+  .prose th{font-family:var(--util); font-size:9.5px; letter-spacing:.11em;
+    text-transform:uppercase; color:var(--ink-soft); background:rgba(23,25,27,.025)}
   /* section heads are labels, not a second serif voice competing with the prose */
   .prose h2{
     font-family:var(--util); font-size:9.5px; font-weight:600; letter-spacing:.13em;
@@ -339,6 +352,9 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
 
   /* where the picture goes */
   .fig{margin:clamp(34px,4vh,52px) 0}
+  .fig img{display:block; width:100%; height:auto; border:1px solid var(--rule);
+    background:#eef2f4}
+  .fig.portrait{width:min(620px,42vw)}
   .fig .box{border:1px solid var(--rule); background:rgba(23,25,27,.02);
     aspect-ratio:16/10; display:flex; align-items:center; justify-content:center;
     text-align:center; padding:24px}
@@ -449,6 +465,35 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
   .rows.contents .ar{align-self:center}
   .contents-links{display:flex; gap:clamp(20px,2.6vw,40px); flex-wrap:wrap; margin-top:24px}
   .contents-links .more{margin-top:0}
+
+  /* A temporary media card for the homepage index. It lives outside the paper
+     stack so it can follow the hovered row without being clipped by the sheet. */
+  .index-preview{
+    --preview-accent:#2E6B53;
+    position:fixed; z-index:6; right:clamp(28px,5vw,100px); top:50%;
+    width:clamp(250px,22vw,390px); pointer-events:none;
+    opacity:0; transform:translate(18px,-50%) rotate(.7deg) scale(.98);
+    transition:opacity .2s ease,transform .38s cubic-bezier(.16,1,.3,1),top .26s cubic-bezier(.16,1,.3,1);
+  }
+  .index-preview.on{opacity:1; transform:translate(0,-50%) rotate(.7deg) scale(1)}
+  body.reading .index-preview,body.desk .index-preview{opacity:0!important}
+  .index-preview-card{background:var(--paper); border:1px solid var(--rule);
+    box-shadow:0 18px 42px rgba(0,0,0,.22); padding:10px}
+  .index-preview-media{position:relative; overflow:hidden; aspect-ratio:4/3;
+    background:#E7E5DE; border:1px solid rgba(23,25,27,.12)}
+  .index-preview-media svg{display:block;width:100%;height:100%}
+  .index-preview-media .wash{fill:var(--preview-accent);transition:fill .25s ease}
+  .index-preview-media .cursor{transform-origin:center; animation:previewCursor 2.8s ease-in-out infinite}
+  .index-preview-copy{display:flex; justify-content:space-between; align-items:flex-start;
+    gap:18px; padding:12px 3px 3px}
+  .index-preview-copy p{margin:0; font-size:17px; line-height:1.2; max-width:20ch}
+  .index-preview-copy span{font-family:var(--util); font-size:8.5px; font-weight:600;
+    letter-spacing:.13em; text-transform:uppercase; color:var(--ink-soft); white-space:nowrap}
+  @keyframes previewCursor{
+    0%,100%{transform:translate(0,0)}
+    45%{transform:translate(42px,-24px)}
+    70%{transform:translate(18px,16px)}
+  }
 
   .more{display:inline-block; margin-top:22px; font-family:var(--util); font-size:9.5px;
     font-weight:600; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-soft);
@@ -795,6 +840,7 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
 
   :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
+  @media (max-width:1100px){.index-preview{display:none}}
   @media (max-width:820px){
     :root{--front-x:9vw;--front-y:3vh;--step-x:3.4vw;--step-y:3.6vh}
     .layer{width:calc(115vw - var(--front-x));height:calc(124vh - var(--front-y))}
@@ -808,11 +854,15 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
     .gloss-note{position:static; width:auto; margin-top:26px; opacity:1;
       transform:none; pointer-events:auto}
     .prose{margin-left:0}
+    .prose .fig,.prose .fig.portrait{width:100%}
+    .prose table{width:100%; display:block; overflow-x:auto}
     .reader{left:auto; right:3vw; width:196px}
     .reader-panel{width:196px}
     .entry{grid-template-columns:28px 1fr 24px;gap:12px}
     .mast-meta{display:none}
+    .index-preview{display:none}
   }
+  @media (hover:none),(pointer:coarse){.index-preview{display:none}}
   @media (prefers-reduced-motion:reduce){
     *{animation-duration:.01ms !important;transition-duration:.01ms !important;
       scroll-behavior:auto !important}
@@ -845,17 +895,15 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
     </header>
 
     <main class="body">
-      <div class="eyebrow lbl reveal" style="--d:.06s">Product design engineering / Agentic AI</div>
+      <div class="eyebrow lbl reveal" style="--d:.06s">Product design engineering / AI products</div>
       <div class="hero-wrap">
         <h1 class="display reveal" style="--d:.13s">Making product experience <button class="gloss" id="gloss" aria-expanded="false" aria-controls="gloss-note">trustworthy</button> to act on.</h1>
-        <p class="dek reveal" style="--d:.24s">Lead Design Engineer at Beroe building agentic procurement intelligence.</p>
+        <p class="dek reveal" style="--d:.24s">Lead Design Engineer at Beroe, designing tools that help teams understand suppliers, risks and purchasing decisions.</p>
         <aside class="gloss-note" id="gloss-note" role="note">
-          <p class="kicker">Trustworthy —</p>
-          <p>This is the problem I am most interested in, and the one I spend my days on at Beroe.</p>
-          <p>I do not think trust is a mood an interface creates. I think it is a property you can
-          check. So I design for it directly: every number traces back to its source, confidence
-          sits at the field rather than the answer, and nothing commits before it has been staged.</p>
-          <p>I start with the part nobody documents — what the system does when it is wrong.</p>
+          <p class="kicker">Easier to understand —</p>
+          <p>I design products that help people make sense of complicated information and decide what to do next.</p>
+          <p>At Beroe, that means showing where information comes from, making uncertainty visible and letting people review changes before anything happens.</p>
+          <p>I pay particular attention to what the product does when the system gets something wrong.</p>
         </aside>
       </div>
 
@@ -1008,8 +1056,44 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
 
 </div>
 
-<aside class="reader" id="reader">
-  <button class="reader-tab" id="readertop" aria-expanded="false">
+<aside class="index-preview" id="index-preview" aria-hidden="true">
+  <div class="index-preview-card">
+    <div class="index-preview-media">
+      <svg viewBox="0 0 560 420" aria-hidden="true">
+        <rect width="560" height="420" fill="#E7E5DE"/>
+        <path d="M0 70H560M0 140H560M0 210H560M0 280H560M0 350H560M70 0V420M140 0V420M210 0V420M280 0V420M350 0V420M420 0V420M490 0V420" stroke="#17191B" stroke-opacity=".07"/>
+        <rect class="wash" x="28" y="28" width="504" height="74" rx="4"/>
+        <circle cx="62" cy="65" r="9" fill="#F8F7F4" fill-opacity=".9"/>
+        <rect x="87" y="55" width="152" height="9" rx="4.5" fill="#F8F7F4" fill-opacity=".9"/>
+        <rect x="87" y="73" width="92" height="6" rx="3" fill="#F8F7F4" fill-opacity=".52"/>
+        <rect x="28" y="126" width="318" height="266" rx="4" fill="#F8F7F4" stroke="#17191B" stroke-opacity=".12"/>
+        <rect x="50" y="151" width="194" height="13" rx="6.5" fill="#17191B" fill-opacity=".82"/>
+        <rect x="50" y="178" width="248" height="7" rx="3.5" fill="#17191B" fill-opacity=".17"/>
+        <rect x="50" y="196" width="214" height="7" rx="3.5" fill="#17191B" fill-opacity=".17"/>
+        <rect x="50" y="235" width="274" height="126" rx="3" fill="#EDF0EC"/>
+        <path d="M70 331L112 294L159 309L210 255L256 280L304 247" fill="none" stroke="var(--preview-accent)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="368" y="126" width="164" height="126" rx="4" fill="#F8F7F4" stroke="#17191B" stroke-opacity=".12"/>
+        <circle class="wash" cx="450" cy="180" r="34" fill-opacity=".18"/>
+        <path d="M450 180L450 151A29 29 0 0 1 476 193Z" class="wash"/>
+        <rect x="394" y="225" width="112" height="7" rx="3.5" fill="#17191B" fill-opacity=".16"/>
+        <rect x="368" y="270" width="164" height="122" rx="4" fill="#17191B" fill-opacity=".87"/>
+        <rect x="391" y="296" width="82" height="8" rx="4" fill="#F8F7F4" fill-opacity=".9"/>
+        <rect x="391" y="318" width="116" height="6" rx="3" fill="#F8F7F4" fill-opacity=".32"/>
+        <rect x="391" y="336" width="94" height="6" rx="3" fill="#F8F7F4" fill-opacity=".32"/>
+        <g class="cursor">
+          <path d="M323 206L350 269L363 245L389 257L397 239L370 227L389 207Z" fill="#F8F7F4" stroke="#17191B" stroke-width="3" stroke-linejoin="round"/>
+        </g>
+      </svg>
+    </div>
+    <div class="index-preview-copy">
+      <p id="index-preview-title">Project preview</p>
+      <span id="index-preview-type">Placeholder</span>
+    </div>
+  </div>
+</aside>
+
+<aside class="reader open" id="reader">
+  <button class="reader-tab" id="readertop" aria-expanded="true">
     <span id="rtype">Reading</span><span id="pct">0%</span>
   </button>
   <div class="reader-panel">
@@ -1113,8 +1197,9 @@ const WORK_ITEMS = [
     byline:"Timeyin Gordon, Product Design at Beroe. 2024. About 10 min.",
     body:`
 <p>Beroe's platform is a robust ecosystem for procurement professionals to explore risks, monitor
-suppliers and act on real-time intelligence. <strong>The homepage did not reflect any of that
-power.</strong></p>
+suppliers and act on real-time intelligence. But its homepage was trying to be a catalogue, an
+activity feed, a notification centre and a wayfinder at the same time. <strong>It exposed the
+platform's complexity before it helped people act.</strong></p>
 
 <dl class="facts">
   <div><dt>Role</dt><dd>Product Design</dd></div>
@@ -1122,71 +1207,76 @@ power.</strong></p>
   <div><dt>Scope</dt><dd>Homepage architecture, search, assistant placement, notifications</dd></div>
 </dl>
 
-<h2 data-toc>Outcome</h2>
-<h3 class="claim">We compressed a multi-module homepage into a single search experience.</h3>
-<p>That is where it ended. It is not where it started, and the pivot in the middle is the part
-worth reading.</p>
-<figure class="fig"><div class="box"><span>Final homepage — search as the entry point</span></div><figcaption>What shipped.</figcaption></figure>
-
 <h2 data-toc>The problem</h2>
-<h3 class="claim">It overwhelmed new users with dense modules and under-served returning ones with repetitive, unclear pathways.</h3>
-<p>Two audiences, one surface, and a layout that served neither. Arriving users could not tell what
-the platform was for; returning users could not get back to what they had been doing.</p>
-<figure class="fig"><div class="box"><span>Previous state of the dashboard</span></div><figcaption>Before.</figcaption></figure>
+<h3 class="claim">One surface was failing people at opposite ends of the learning curve.</h3>
+<p>New users met dense modules before they understood what the platform could do. Returning users
+had repetitive, unclear paths back to suppliers, reports and work already in progress. The
+homepage displayed everything, but guided nobody.</p>
+<figure class="fig"><img src="/work/search-as-home/previous-dashboard.webp" alt="The previous Beroe dashboard, crowded with product modules, news, activity and notifications" loading="lazy"><figcaption>The previous dashboard asked users to interpret the platform before choosing what to do.</figcaption></figure>
 
 <h2 data-toc>The reframe</h2>
 <h3 class="claim">What if the homepage acted like a concierge?</h3>
 <p>Rather than treat it as a static dashboard, we used scenario-based design borrowed from travel
-apps and maps, and organised everything around user intent. Four questions became the foundation:</p>
+apps and maps and organised the experience around intent. Four questions became the foundation:</p>
 <div class="points">
 <p><strong>What would you like to do?</strong> Open-ended, goal-oriented exploration through search
 or modules.</p>
 <p><strong>Continue from where you stopped?</strong> Contextual access to recent activity and pages
 already visited.</p>
-<p><strong>What is happening today?</strong> Time-sensitive data, critical updates, relevant
+<p><strong>What is happening today?</strong> Time-sensitive data, critical updates and relevant
 procurement insight.</p>
 <p><strong>What should I discover?</strong> Recommended products and modules based on role and usage.</p>
 </div>
 
-<h2 data-toc>What we built</h2>
-<p>Each question was mapped to a module: a persistent search bar so users could begin anywhere;
-Abi as a companion that guided and answered without interrupting flow; behavioural recommendations
-that removed the need for tutorial onboarding; and contextual intelligence that grouped and
-prioritised alerts so only the relevant surfaced.</p>
+<h2 data-toc>The first direction</h2>
+<h3 class="claim">We translated each question into a visible module.</h3>
+<p>A persistent search bar let users begin anywhere. Recent activity restored context. Live updates
+surfaced what had changed, while recommendations introduced relevant products without tutorial-led
+onboarding. Abi sat alongside the journey as a companion that could guide and answer without
+interrupting it.</p>
+<figure class="fig portrait"><img src="/work/search-as-home/concierge-direction.webp" alt="The initial concierge-style homepage organised around suggested activity, recent work, live updates and recommendations" loading="lazy"><figcaption>The first direction made the four questions explicit in the page architecture.</figcaption></figure>
 
-<h2 data-toc>Notifications</h2>
+<h2 data-toc>The operational constraint</h2>
 <h3 class="claim">Users typically receive about 5,000 alerts.</h3>
 <p>Volume scales with alert frequency, supplier count and portfolio breadth. We moved notifications
 into a drawer, grouped similar alerts through consolidation, added iconography so categories could
 be identified at a glance, and gave system alerts their own treatment so critical information
-stands out without flooding the interface.</p>
-<figure class="fig"><div class="box"><span>Notification drawer and consolidation model</span></div><figcaption>Grouped, categorised, prioritised.</figcaption></figure>
+stood out without flooding the homepage.</p>
+<figure class="fig"><img src="/work/search-as-home/notification-system.webp" alt="Notification drawer explorations showing grouped alert categories and consolidated updates" loading="lazy"><figcaption>Consolidation turned thousands of alerts into grouped, recognisable and actionable updates.</figcaption></figure>
 
 <h2 data-toc>The pivot</h2>
-<h3 class="claim">In testing, users kept reaching for one thing. So search became the homepage.</h3>
-<p>They preferred a single entry point, and we pivoted to it rather than around it. Search stopped
-being a tool and became an intelligent, predictive surface. Abi was embedded directly in results to
-guide, complete or anticipate. The four guiding questions were now answered implicitly — through
-recent history, live data and recommended actions — rather than as four separate modules.</p>
-<figure class="fig"><div class="box"><span>Search as the homepage</span></div><figcaption>The four questions, answered implicitly.</figcaption></figure>
+<h3 class="claim">In testing, users kept reaching for one thing: search.</h3>
+<p>The four questions were useful, but they did not need four equally prominent destinations.
+Users preferred one entry point, so we reorganised the experience around that behaviour. Search
+stopped being a utility in the header and became the homepage itself.</p>
+<p>Abi moved inside the search experience, where it could interpret a query, recover from an empty
+result and suggest a more useful next question. Recent history, real-time intelligence and
+recommended actions answered the original four questions implicitly rather than as separate
+modules.</p>
+<figure class="fig"><img src="/work/search-as-home/search-with-abi.webp" alt="Beroe search results with Abi suggesting related questions when a query has no direct result" loading="lazy"><figcaption>Abi appears at the moment search needs help, rather than as a separate destination.</figcaption></figure>
 
-<h2 data-toc>Quick actions</h2>
-<p>To cut decision fatigue we added Quick Action Cards: dynamic prompts tailored to recent activity
-and role, carrying custom illustrations, surfacing new features, and acting as a light alternative
-to a full tutorial — nudging rather than instructing.</p>
+<h2 data-toc>The final experience</h2>
+<h3 class="claim">One clear starting point, with context waiting underneath it.</h3>
+<p>The final direction paired search with a compact layer of Quick Action Cards tailored to recent
+activity and role. The cards could introduce features, resume familiar tasks or surface a timely
+piece of intelligence without turning the homepage back into a wall of modules. Notifications and
+Abi remained close at hand, but neither competed with the primary action.</p>
+<figure class="fig"><img src="/work/search-as-home/final-homepage.webp" alt="Final Beroe homepage with a prominent search field, contextual quick actions and an Abi conversation card" loading="lazy"><figcaption>The final direction: search leads; quick actions, notifications and Abi support the next decision.</figcaption></figure>
 
 <h2 data-toc>Handoff</h2>
-<p>As the prototypes matured we moved from Figma to Framer to Subframe, generating clean React
-integrated with Tailwind. That gave engineering production-ready components which held the fidelity
-of the interactions and styles, and cut both implementation time and the gap between design and
+<h3 class="claim">The prototype became part of the implementation conversation.</h3>
+<p>As the work matured, we moved from Figma to Framer and then to Subframe, generating React
+components integrated with Tailwind. Engineering received production-oriented components that
+preserved the interactions and visual decisions, reducing the translation gap between design and
 build.</p>
 
 <blockquote><p>AI must live where decisions happen.</p></blockquote>
 
 <h2 data-toc>What I learned</h2>
 <h3 class="claim">Systems can be simple, but not simplistic.</h3>
-<p>Compressing a multi-module homepage into a single search experience required bold thinking. It
-paid off, but it only worked because the underlying complexity was understood first.</p>
+<p>Compressing a multi-module homepage into one search-led experience only worked because we first
+mapped the complexity underneath it. The concierge direction was not wasted work; it revealed the
+intents that search eventually had to support.</p>
 <h3 class="claim">AI needs integration, not decoration.</h3>
 <p>Embedding Abi within the journey rather than tacking it on is what let it become useful instead
 of intrusive.</p>
@@ -1390,71 +1480,110 @@ entire design method.</p>
 
 
 const ARCHIVE = [
-  { marker:"2024", slug:"Archived", path:"/work/archive/dustin-home", title:"Enhancing the checkout experience for Dustin Home",
+  { marker:"2024", slug:"Archived", path:"/work/archive/dustin-home", title:"What if the checkout process was your biggest competitor?",
+    accent:"your biggest competitor",
     meta:"Dustin Home · E-commerce · UX research",
     byline:"UX Researcher. Hyper Island MA Digital Management, in partnership with Dustin. 2024.",
     body:`
-<p>What if your checkout process was your biggest competitor? Dustin dominates B2B electronics
-across the Nordics and Benelux. <strong>Its consumer platform did not.</strong></p>
+<p>Dustin is a leading B2B electronics retailer across the Nordics and Benelux. Its consumer
+platform, Dustin Home, faced a different reality: two separate platforms split traffic, weakened
+brand continuity and missed opportunities between customers who shop both professionally and
+personally.</p>
+<p>This applied academic project was a partnership between Hyper Island's MA Digital Management
+programme and Dustin. My role was to turn observed checkout friction into evidence-backed
+recommendations—not to claim an implementation or conversion outcome that the project did not
+measure.</p>
 
 <dl class="facts">
   <div><dt>Role</dt><dd>UX Researcher</dd></div>
   <div><dt>Timeline</dt><dd>2024</dd></div>
   <div><dt>Context</dt><dd>Hyper Island MA Digital Management × Dustin</dd></div>
+  <div><dt>Research</dt><dd>5 interviews · 4 competitors · 6 usability criteria</dd></div>
 </dl>
+<figure class="fig"><img src="/work/dustin-home/project-overview.webp" alt="A collage of Dustin Home product, cart and checkout interfaces alongside the research team" loading="lazy"><figcaption>The project followed the consumer journey from product discovery to checkout.</figcaption></figure>
 
-<h2 data-toc>The numbers</h2>
-<h3 class="claim">68.8% cart abandonment, and two of six usability criteria met.</h3>
-<p>Competitors had fully implemented all six. Two separate platforms split traffic, confused the
-brand and missed every cross-segment opportunity between customers who shop both personally and
-professionally.</p>
-<figure class="fig"><div class="box"><span>Journey map and UX audit</span></div><figcaption>Friction from homepage to completion, mapped against AIDA.</figcaption></figure>
+<h2 data-toc>The challenge</h2>
+<h3 class="claim">68.8% cart abandonment, while Dustin Home met only two of six benchmarked checkout criteria.</h3>
+<p>The problem was broader than the final payment screen. Customers formed trust while searching,
+comparing products, reading specifications and judging whether the retailer understood their
+needs. Friction accumulated throughout the journey and arrived at checkout as hesitation.</p>
 
-<h2 data-toc>The research</h2>
-<p>Usability interviews with five Swedish participants — tech-savvy professionals in their late
-twenties to mid thirties — using semi-structured think-aloud protocol. Individual empathy maps per
-participant using D.School methodology, then synthesis. Competitive benchmarking against Komplett,
-Webhallen, Elgiganten and Inet across six usability criteria.</p>
-<figure class="fig"><div class="box"><span>Empathy maps and competitive benchmark</span></div><figcaption>Five participants, four competitors, six criteria.</figcaption></figure>
+<h2 data-toc>Mapping the journey</h2>
+<h3 class="claim">We looked for the moments where attention became confidence—or disappeared.</h3>
+<p>Collaborative usability testing mapped friction from the homepage through checkout. The AIDA
+framework—attention, interest, desire and action—helped identify the moments where customers chose
+to continue, compare elsewhere or stop.</p>
+<figure class="fig portrait"><img src="/work/dustin-home/aida-model.webp" alt="AIDA funnel showing awareness, interest, desire and action" loading="lazy"><figcaption>AIDA provided the scaffold for mapping decisions across the purchase journey.</figcaption></figure>
+<figure class="fig"><img src="/work/dustin-home/journey-map.webp" alt="Customer journey map documenting discovery, active evaluation and retailer choice during the desire stage" loading="lazy"><figcaption>The audit connected interface friction to the decisions customers were trying to make.</figcaption></figure>
 
-<h2 data-toc>What they said</h2>
-<h3 class="claim">Clean but not clear, with zero emotional connection.</h3>
-<p>Sixty per cent preferred guest checkout, directly contradicting Dustin's mandatory account
-creation. Four of five would not buy a product without reviews.</p>
+<h2 data-toc>Primary research</h2>
+<h3 class="claim">Five Swedish participants made the same underlying need visible: confidence before commitment.</h3>
+<p>We ran semi-structured, think-aloud interviews with five tech-savvy professionals in their late
+twenties to mid-thirties. Individual empathy maps using the D.School method were synthesised to
+identify recurring concerns: value for money, limited emotional connection, checkout complexity
+and insufficient product reviews.</p>
+<figure class="fig"><img src="/work/dustin-home/empathy-map.webp" alt="Empathy map synthesising one participant's goals, behaviours, pains and trust needs" loading="lazy"><figcaption>Individual maps preserved participant context before findings were synthesised across the group.</figcaption></figure>
+
+<h2 data-toc>What we learned</h2>
+<h3 class="claim">The experience was described as clean, but not always clear.</h3>
+<p>Three of five participants preferred guest checkout. Four of five said they would not purchase
+a product without adequate reviews. The current guest option existed, but lacked the placement and
+visual hierarchy participants expected; account creation was presented before its value had been
+earned.</p>
 
 <blockquote><p>If there are no or few reviews, I will navigate away and search on Google.</p></blockquote>
 
-<h2 data-toc>Three pillars</h2>
+<h2 data-toc>Competitive evidence</h2>
+<h3 class="claim">Competitors made the guest path easier to recognise and delayed the account decision.</h3>
+<p>We benchmarked Dustin Home and Dustin B2B against Komplett, Webhallen, Elgiganten and Inet across
+six checkout criteria. Dustin Home met two. Webhallen, Elgiganten and Inet integrated guest
+checkout into the flow, gave it greater visual priority and postponed account creation.</p>
+<figure class="fig"><img src="/work/dustin-home/checkout-benchmark.webp" alt="Checkout benchmark comparing Dustin Home and Dustin B2B with Komplett, Webhallen, Elgiganten and Inet" loading="lazy"><figcaption>Six criteria exposed where Dustin's account and guest-checkout hierarchy differed from competitors.</figcaption></figure>
+
+<h2 data-toc>Three recommendations</h2>
+<h3 class="claim">Each recommendation traces directly to a research finding.</h3>
 
 <div class="trial">
-  <p class="try">Emotional design.</p>
-  <p>Customers with emotional brand relationships show three times the lifetime value and 71%
-  recommendation rates against a 45% average; visual appeal shapes perception within 17
-  milliseconds. Applied Aaron Walter's framework — a pleasurable layer on a functional foundation.</p>
-  <p class="verdict chosen">Signature personality, colour psychology, personalised messaging and
-  lifestyle-led product photography.</p>
+  <p class="try">1 — Build emotional clarity on top of utility.</p>
+  <p>Participants trusted the functional offer but described little connection to the brand. Aaron
+  Walter's emotional-design framework helped distinguish the reliable and usable foundation from
+  the pleasurable layer the consumer experience was missing.</p>
+  <p class="verdict chosen">Recommendation: strengthen personality, hierarchy, messaging and
+  lifestyle-led product presentation without compromising the functional foundation.</p>
+</div>
+<figure class="fig portrait"><img src="/work/dustin-home/emotional-design-model.webp" alt="Emotional design model showing a pleasurable layer above functional, reliable and usable foundations" loading="lazy"><figcaption>The opportunity was not decoration; it was the missing pleasurable layer above an already functional base.</figcaption></figure>
+<figure class="fig"><img src="/work/dustin-home/homepage-direction.webp" alt="A Dustin Home interface direction with clearer navigation, promotional hierarchy and trust signals" loading="lazy"><figcaption>An interface direction exploring clearer hierarchy, personality and retail confidence.</figcaption></figure>
+
+<div class="trial">
+  <p class="try">2 — Delay the account decision.</p>
+  <p>Guest checkout was technically available, but its placement and hierarchy made account creation
+  feel like the expected route. Research showed that customers wanted to complete the purchase
+  before deciding whether an account was worthwhile.</p>
+  <p class="verdict chosen">Recommendation: make guest checkout the visual priority, explain the
+  option plainly, then present account benefits on the confirmation page and in follow-up email.</p>
 </div>
 
 <div class="trial">
-  <p class="try">Delayed account creation.</p>
-  <p>Baymard data attributes 25% of cart abandonment directly to mandatory account requirements.
-  Eye-tracking shows users expect guest options at upper-left on desktop; 53% of mobile users could
-  not find guest checkout when it sat below other options.</p>
-  <p class="verdict chosen">Guest checkout as the visual priority, with account benefits moved to
-  the confirmation page and a follow-up email.</p>
+  <p class="try">3 — Put reviews where trust is formed.</p>
+  <p>Four of five participants would leave the site when product reviews were absent or too few.
+  Reviews were not an accessory to the product page; they were part of active evaluation.</p>
+  <p class="verdict chosen">Recommendation: begin with Trustpilot integration for immediate
+  coverage, share review evidence across purchase touchpoints, and develop an in-house capability
+  for long-term experience control.</p>
 </div>
 
-<div class="trial">
-  <p class="try">Review system integration.</p>
-  <p>BrightLocal finds 88% of consumers are influenced by online reviews; Chen and He (2022) show a
-  positive correlation between reviews, trust and purchase intention.</p>
-  <p class="verdict chosen">Trustpilot integration for immediate impact, moving to in-house
-  capability for long-term control of the customer experience.</p>
-</div>
+<h2 data-toc>What the project produced</h2>
+<h3 class="claim">A research-backed roadmap, not a fabricated conversion claim.</h3>
+<p>The deliverable connected observed behaviour, journey friction, competitive evidence and
+secondary research to three implementation directions. Whether those recommendations changed
+conversion would require implementation and a measured post-launch comparison; this project did
+not include that phase.</p>
 
-<h2 data-toc>What I learned</h2>
+<h2 data-toc>Reflection</h2>
 <h3 class="claim">Checkout is where a retailer finds out what its information architecture actually costs.</h3>
-<p>Every ambiguity upstream arrives at the payment step as hesitation.</p>
+<p>Every ambiguity upstream arrives at the payment step as hesitation. The most useful outcome of
+the research was seeing checkout not as an isolated funnel screen, but as the final expression of
+trust built—or lost—throughout the shopping journey.</p>
 `
   },
   { marker:"2021", slug:"Archived", path:"/work/archive/3d-motion", title:"Elevating user experience through 3D and motion design",
@@ -1538,27 +1667,223 @@ const CRAFT_ITEMS = [
     slug:"Side project", meta:"Ply · Canvas editor",
     path:"/craft/ply",
     marker:"01",
-    title:"Ply, and what a canvas costs you.",
+    title:"Ply — learning how a design canvas really works.",
     home:"Canvas editor",
-    accent:"what a canvas costs you",
-    byline:"Side project. Built and shipped.",
+    accent:"how a design canvas really works",
+    byline:"An independent exploration into rendering, coordinate systems, nodes and overlays.",
     body:`
-<p>A canvas-based editor. Infinite surface, direct manipulation, the kind of tool that looks
-obvious until you build one.</p>
+<p>Ply began as one of those curiosity projects that would not leave me alone. I wanted to know
+what it takes to make a 2D canvas feel natural—not only how to draw one.</p>
 
-<h2 data-toc>Why build it</h2>
-<p>Canvas tools are where design and engineering stop being separable. Hit testing, transform
-stacks, selection state, undo — none of it is a design problem you can hand over, and none of it is
-an engineering problem you can solve without taste. I wanted to know whether I could hold both ends
-of that at once.</p>
+<dl class="facts">
+  <div><dt>Role</dt><dd>Product Designer + Frontend Engineer</dd></div>
+  <div><dt>Team</dt><dd>Independent project</dd></div>
+  <div><dt>Built with</dt><dd>React, TypeScript, PixiJS, Zustand, Lexical, Motion, CSS Modules, Claude and Antigravity</dd></div>
+</dl>
 
-<h2 data-toc>What it taught me</h2>
-<p><em>Describe the hard part in your own words — the rendering approach, the interaction model,
-what you got wrong first. This is the section that proves the engineering half.</em></p>
+<h2 data-toc>The idea</h2>
+<h3 class="claim">What if designing a product and defining how it works happened on the same canvas?</h3>
+<p>I kept thinking about two tools that feel powerful for different reasons. Figma provides a
+freeform surface where ideas can be moved around spatially. n8n provides a visual way to connect
+triggers, actions and decisions into something that actually runs.</p>
+<p>Today, those activities usually live in separate tools. An interface is designed in one place;
+its behaviour is described in another. The connection is handed off through files, tickets,
+meetings and interpretation.</p>
+<p>My original vision for Ply was a shared environment where interface, logic and automation could
+live together. A button would not only have a visual style; it could reveal the workflow behind it.
+Designing and building would become different views of the same system rather than separate phases
+on separate platforms.</p>
+<p>I knew that was too much to build at once. Before design nodes and automation nodes could share a
+canvas, I needed to understand the foundation beneath both:</p>
+<blockquote><p>How do you build a fast, extensible 2D canvas?</p></blockquote>
 
-<h2 data-toc>Where it is</h2>
-<p><em>Add a live link, a video walkthrough, or the repo. A canvas editor is the single most
-persuasive thing on this page and it should be openable.</em></p>
+<h2 data-toc>Choosing an engine</h2>
+<h3 class="claim">I expected a library decision. It became an architecture decision.</h3>
+<p>One of the first projects I studied was <a href="https://github.com/toeverything/AFFiNE">AFFiNE</a>
+and its open-source framework, <a href="https://github.com/toeverything/blocksuite">BlockSuite</a>.
+BlockSuite grew out of AFFiNE's attempt to combine document editing with an edgeless whiteboard.
+That was close to what I imagined, and it proved that documents and spatial canvases did not have
+to remain separate.</p>
+<p>But its assumptions were connected to its origins as a block-based knowledge tool. Ply needed
+room for design objects, documents, executable workflow nodes, connectors, nested canvases and
+interaction models I had not invented yet.</p>
+<p>Starting with BlockSuite might have helped me move faster. It might also have meant inheriting
+another product's idea of what a node should be.</p>
+<blockquote><p>The fastest way to begin was not necessarily the best way to explore.</p></blockquote>
+
+<h2 data-toc>The architecture bet</h2>
+<h3 class="claim">“Canvas” can mean several very different things.</h3>
+<div class="points">
+<p><strong>The DOM.</strong> Native text, events and accessibility, but a large scene can repeatedly
+trigger layout and paint work.</p>
+<p><strong>Canvas 2D.</strong> Direct control over drawing, but the editor must remember the scene,
+redraw it, order it and determine what the user clicked.</p>
+<p><strong>A GPU-rendered scene.</strong> Well suited to transforming many visual objects, while
+native text editing and interface controls remain stronger in the browser.</p>
+</div>
+<p>At first this looked like a CPU-versus-GPU decision. In reality, the CPU still has to understand
+pointer input, update the document, calculate geometry and decide what changed. The GPU can then
+draw and composite the result.</p>
+<h3 class="claim">The document would not know which renderer drew it.</h3>
+<p>Figma's description of its canvas as something closer to a game engine than a conventional web
+page helped clarify the separation. Its custom canvas and surrounding React interface are distinct
+systems. <a href="https://www.figma.com/blog/how-figma-draws-inspiration-from-the-gaming-world/">Figma's engineering write-up</a>
+made me ask which parts of Ply should know how pixels are produced.</p>
+<p>I made the editor core renderer-agnostic. Think of the document as a blueprint and the renderer
+as a projector: the blueprint describes objects, positions, styles and relationships; the
+projector decides how to display them. Replacing the projector should not invalidate the blueprint.</p>
+<pre aria-label="Ply architecture"><code>React interface and DOM editors
+              ↓
+Document, selection, viewport and tools
+              ↓
+Renderer-independent editor core
+              ↓
+PixiJS renderer</code></pre>
+<p>Tools operate on nodes, selections, transforms and commands rather than PixiJS objects. A small
+renderer adapter translates those concepts into a Pixi scene. That cost more at the beginning but
+protected the larger exploration: the renderer can be optimised or replaced without rebuilding
+undo, tools or the document model.</p>
+
+<h2 data-toc>The hybrid canvas</h2>
+<h3 class="claim">The recurring decision was not which technology to choose, but where each should stop.</h3>
+<p>PixiJS provides a GPU-backed renderer with containers, graphics, text, transforms and display
+order without forcing Ply to work directly with WebGL or WebGPU. But the whole application does
+not live inside PixiJS.</p>
+<div class="points">
+<p><strong>The GPU draws.</strong> PixiJS renders the grid, shapes, frames, text, paths, connectors
+and selection graphics.</p>
+<p><strong>The CPU decides.</strong> TypeScript manages the document, geometry, hit testing,
+commands, tools and hierarchy.</p>
+<p><strong>The DOM handles native interaction.</strong> React renders the toolbar, layers,
+inspector, menus and text editors.</p>
+</div>
+
+<h2 data-toc>Making it feel native</h2>
+<h3 class="claim">An infinite canvas can be mathematically correct and still feel wrong.</h3>
+<p>Every object exists in at least two places. <strong>World space</strong> is its location on the
+infinite document. <strong>Screen space</strong> is where the camera currently makes it appear.
+Panning moves the camera; zooming changes its scale. The object itself has not moved.</p>
+<p>Every pointer event must be translated through that camera before a tool can use it. A rectangle
+tool should receive the same world position whether the canvas is at 25% or 400%.</p>
+<pre><code>screen = (world + pan) × zoom
+world = screen ÷ zoom - pan</code></pre>
+<p>When someone zooms at the cursor, the point underneath it should remain in place. If it drifts,
+the canvas feels as though it is escaping. Keeping that point stationary made the interaction feel
+dramatically more natural.</p>
+
+<h3 class="claim">Selection controls belong to the screen, not the world.</h3>
+<p>Rendering resize handles with the objects they control makes them tiny when zoomed out and
+enormous when zoomed in. I split the Pixi stage into three layers:</p>
+<div class="points">
+<p><strong>A grid</strong> covering the viewport.</p>
+<p><strong>A world</strong> containing the actual nodes.</p>
+<p><strong>A screen-space layer</strong> containing selections, hover outlines and handles.</p>
+</div>
+<p>Nodes move and scale with the camera. Controls follow their positions while keeping a consistent
+physical size. It is nearly invisible when it works; when it does not, the editor immediately
+feels like a prototype.</p>
+
+<h3 class="claim">Nodes need to know where they live.</h3>
+<p>Ply stores nodes in a flat collection for fast lookup. Parent and child IDs describe hierarchy.
+A shared structure—identity, type, transform, style and properties—supports rectangles, documents,
+sticky notes, connectors and workflow actions.</p>
+<p>Top-level nodes use world positions; children use positions relative to their parent. Think of a
+chair inside a room: if the room moves, the chair moves with it, while its position inside the room
+does not change. Updating both the frame and its children would apply the translation twice.</p>
+<p>The first transform system supports position, size and rotation. Full inherited rotation, scale
+and skew will eventually require a matrix system. Starting smaller made the hierarchy rules visible
+before making the maths more powerful.</p>
+
+<h3 class="claim">Text reminded me that the browser is still incredibly useful.</h3>
+<p>Displaying text and editing text are different problems. PixiJS can draw text, but editing needs
+a caret, selection, clipboard behaviour, keyboard shortcuts, multiline input and eventually
+accessibility.</p>
+<p>When a user edits text, Ply places a real DOM editor over the canvas object and temporarily hides
+the Pixi representation. Committing the edit saves content back to the document and restores GPU
+rendering. Rich documents use Lexical; sticky notes and contextual controls use the same DOM-overlay
+principle.</p>
+<p>This hybrid approach felt less ideologically pure than “everything on canvas,” but it produced a
+much better interaction model.</p>
+
+<h2 data-toc>Tools and commands</h2>
+<h3 class="claim">Pointer movement had to become understandable actions.</h3>
+<p>The select tool is where the systems collide. At different moments, the same pointer may be
+hovering, drawing a marquee, moving an object, resizing it or rotating it. Treating those as
+unrelated event handlers quickly becomes confusing.</p>
+<p>I modelled tools as small state machines. A tool always knows which interaction it is performing
+and which transitions are allowed next.</p>
+<p>Tools do not mutate the document directly. They emit commands such as “add node,” “update
+transform” or “move selection.” Commands can be undone, redone, merged and grouped into
+transactions. A drag becomes one understandable history entry—<strong>Move</strong>—instead of
+hundreds of pointer updates.</p>
+<p>That structure also supports bound connectors. Moving a node updates its connected edges as part
+of the same interaction rather than as an unrelated rendering trick.</p>
+
+<h2 data-toc>Performance</h2>
+<h3 class="claim">The performance trick was to create two paths.</h3>
+<p>The document should be the source of truth, but pushing every pointer movement through global
+state and React puts work on the hottest interaction path.</p>
+<div class="points">
+<p><strong>Preview immediately.</strong> While the pointer moves, Ply updates the relevant Pixi
+objects directly.</p>
+<p><strong>Commit deliberately.</strong> On pointer release, one final command records the transform
+in the document and history.</p>
+</div>
+<p>The preview path is optimised for responsiveness; the commit path is optimised for correctness.
+Pixi's continuous ticker also stops while nothing changes. Render requests made during the same
+browser frame are collected into one <code>requestAnimationFrame</code> callback, while the React
+interface subscribes only to the state each control needs.</p>
+
+<h3 class="claim">Measure without pretending the work is finished.</h3>
+<p>A small panel shows FPS, average frame interval and node count. It reveals obvious degradation
+and updates only four times per second so it does not create unnecessary React work.</p>
+<p>But the monitor measures browser animation-frame rhythm, not isolated GPU render time, React
+work, hit testing or pointer-to-pixel latency. It is instrumentation, not a benchmark. I avoided
+turning “I saw 60 FPS” into a claim that the editor scales.</p>
+<p>A proper test would create repeatable scenes containing 100, 1,000, 5,000 and 10,000 nodes and
+measure frame time, input latency, renderer synchronisation, hit-test time, memory use and idle
+activity.</p>
+
+<h2 data-toc>Why CSS Modules</h2>
+<h3 class="claim">I wanted the visual rules of each editor surface to be inspectable.</h3>
+<p>The interface uses CSS Modules and shared custom properties rather than Tailwind. This is not
+because utility classes are inherently slow. Ply contains floating panels, portal-based popovers,
+draggable inputs, layered overlays and controls with precise interaction states.</p>
+<p>Component-scoped CSS gives each surface a clear boundary. Shared variables still provide a small
+design system for spacing, typography, colour, radii, layers and light and dark themes. React stays
+focused on behaviour: the component decides what state it is in; the stylesheet describes what
+that state looks like.</p>
+
+<h2 data-toc>What remains</h2>
+<h3 class="claim">Ply has foundations—and clear scaling limits.</h3>
+<p>The editor now supports pan and zoom, shapes, frames, text, documents, hierarchy, grouping,
+selection, transforms, undo, connectors, overlays and multiple canvas types.</p>
+<p>The renderer accepts incremental document changes, but the current React bridge still traverses
+every active node when the document changes. Hit testing checks nodes from front to back one at a
+time. A quadtree exists for faster spatial searches but is not connected to the live renderer.</p>
+<div class="points">
+<p>Connect document diffs so the renderer processes only changed nodes.</p>
+<p>Use the spatial index to narrow hit tests.</p>
+<p>Replace simple parent offsets with full transform matrices.</p>
+<p>Make every DOM overlay use one shared coordinate pipeline.</p>
+<p>Build reproducible stress tests instead of relying on an FPS counter.</p>
+</div>
+<p>A few early overlays repeated the pan-and-zoom formula instead of using the shared conversion
+function. Even one sign difference can make an editor drift away from its node. Coordinate maths
+is not view decoration—it is part of the product's behaviour.</p>
+
+<h2 data-toc>What I learned</h2>
+<h3 class="claim">Drawing is only one part of making a canvas feel right.</h3>
+<p>The camera has to agree with the pointer. Children have to agree with their parents. Selection
+controls have to agree with both the world and the screen. Fast previews eventually have to agree
+with durable state. The renderer matters, but the boundaries around it matter more.</p>
+<p>Claude and Antigravity made it possible to explore a much wider technical surface quickly. They
+could help generate a renderer, tool or node type. But speed made architectural discipline more
+important, not less. I still had to decide which system owned the truth, inspect generated
+assumptions and test whether an interaction actually felt right.</p>
+<p>Ply has not yet reached the original vision of design and automation sharing one living canvas.
+It has given me the foundation—and the mental model—to keep exploring it.</p>
+<blockquote><p>The GPU draws. The CPU decides. The DOM handles the interactions it already does exceptionally well.</p></blockquote>
 `
   },
   {
@@ -1806,6 +2131,25 @@ const body=document.body, home=$("home"), pad=$("pad");
 const SHEETS=[$("read"), $("read2")];
 const HOME_TITLE="Timeyin Gordon — Product design engineer";
 
+/* Lenis is initialized after this inline application script. Until it is ready,
+   navigation falls back to the browser's native scrolling. */
+function moveSheet(el,target,immediate=false){
+  const lenis=window.__sheetLenis&&window.__sheetLenis.get(el);
+  if(lenis){
+    lenis.scrollTo(target,{immediate,force:true,duration:immediate?undefined:.32});
+    return;
+  }
+  if(typeof target==="number") el.scrollTo({top:target,behavior:immediate?"auto":"smooth"});
+  else target.scrollIntoView({behavior:immediate?"auto":"smooth",block:"start"});
+}
+
+function syncSheetLenis(){
+  const instances=window.__sheetLenis;
+  if(!instances) return;
+  const current=active||home;
+  instances.forEach((lenis,el)=>{ if(el===current) lenis.start(); else lenis.stop(); });
+}
+
 /* ---------- the sheet stack ----------
    Level 0 is the landing page. Section pages (Work, Writing) open at level 1.
    A case study opened from Work sits at level 2. Everything steps back a slot
@@ -1884,6 +2228,7 @@ function layout(){
   });
   active = n>0 ? SHEETS[n-1] : null;
   $("rtype").textContent=n>0?(stack[n-1].slug||"Reading"):"Reading";
+  syncSheetLenis();
 }
 
 function neighbour(e){
@@ -1969,7 +2314,7 @@ let push = function(e){
   if(stack.length>=2) stack[stack.length-1]=e; else stack.push(e);
   const el=SHEETS[stack.length-1];
   render(el,e); layout();
-  el.scrollTop=0;
+  moveSheet(el,0,true);
   buildToc(); progress();
   el.querySelector(".r-back").focus({preventScroll:true});
   navigationIndex+=1;
@@ -1982,7 +2327,7 @@ function swap(e){
   if(!stack.length) return push(e);
   stack[stack.length-1] = e;
   const el = SHEETS[stack.length-1];
-  render(el, e); layout(); el.scrollTop = 0;
+  render(el, e); layout(); moveSheet(el,0,true);
   buildToc(); progress();
   el.querySelector(".r-back").focus({preventScroll:true});
   navigationIndex+=1;
@@ -2092,6 +2437,28 @@ async function synthesise(){
 }
 
 let results = null;
+const hoverPreview=$("index-preview");
+const hoverPreviewTitle=$("index-preview-title");
+const hoverPreviewType=$("index-preview-type");
+const previewPointer=window.matchMedia("(hover:hover) and (pointer:fine)");
+const previewColours={work:"#2E6B53",craft:"#C45B43",writing:"#526B8A"};
+
+function hideIndexPreview(){
+  hoverPreview.classList.remove("on");
+}
+
+function showIndexPreview(item,row){
+  if(!previewPointer.matches||window.innerWidth<=1100) return;
+  hoverPreviewTitle.textContent=item.title;
+  hoverPreviewType.textContent=item.ty||item.slug||"Preview";
+  hoverPreview.style.setProperty("--preview-accent",previewColours[item.grp]||"#2E6B53");
+
+  const rect=row.getBoundingClientRect();
+  const half=(hoverPreview.offsetHeight||340)/2;
+  const center=Math.max(24+half,Math.min(window.innerHeight-24-half,rect.top+rect.height/2));
+  hoverPreview.style.top=center+"px";
+  hoverPreview.classList.add("on");
+}
 
 function clearAsk(){
   results = null; $("ask").value = "";
@@ -2157,6 +2524,7 @@ function paintFilter(){
 }
 
 function paintContents(){
+  hideIndexPreview();
   const list = results
     ? results.map(it => CONTENTS.find(c => c.title === it.title) || it)
     : CONTENTS.filter(c => filterBy==="all" || c.grp===filterBy);
@@ -2168,7 +2536,12 @@ function paintContents(){
       ${AR_SVG}
     </a>`).join("");
   $("contents").querySelectorAll(".row").forEach(row=>{
-    row.addEventListener("click",event=>{ event.preventDefault(); push(list[+row.dataset.i]); });
+    const item=list[+row.dataset.i];
+    row.addEventListener("mouseenter",()=>showIndexPreview(item,row));
+    row.addEventListener("mouseleave",hideIndexPreview);
+    row.addEventListener("focus",()=>showIndexPreview(item,row));
+    row.addEventListener("blur",hideIndexPreview);
+    row.addEventListener("click",event=>{ event.preventDefault(); hideIndexPreview(); push(item); });
   });
 }
 paintFilter();
@@ -2220,8 +2593,7 @@ function measure(){
   }).join("");
   $("bar").querySelectorAll(".seg").forEach(btn=>btn.addEventListener("click",()=>{
     const sec=sections[+btn.dataset.s];
-    sec.el ? sec.el.scrollIntoView({behavior:"smooth",block:"start"})
-           : active.scrollTo({top:0,behavior:"smooth"});
+    moveSheet(active,sec.el||0);
   }));
 }
 
@@ -2232,8 +2604,7 @@ function buildToc(){
     heads.map((h,i)=>`<a href="#" data-h="${i}">${h.textContent}</a>`).join("");
   $("toc").querySelectorAll("a").forEach(link=>link.addEventListener("click",ev=>{
     ev.preventDefault();
-    if(link.dataset.top) active.scrollTo({top:0,behavior:"smooth"});
-    else heads[+link.dataset.h].scrollIntoView({behavior:"smooth",block:"start"});
+    moveSheet(active,link.dataset.top?0:heads[+link.dataset.h]);
   }));
   $("notes").innerHTML="";
   measure();
@@ -2305,7 +2676,7 @@ function restoreRoute(path){
   stack.forEach((entry,index)=>render(SHEETS[index],entry));
   layout();
   if(stack.length){
-    active.scrollTop=0;
+    moveSheet(active,0,true);
     buildToc(); progress();
   }
   syncTitle();
@@ -2498,6 +2869,33 @@ document.addEventListener("keydown",e=>{
   else if(body.classList.contains("reading")) routeBack();
   else if(PLAYGROUND_ENABLED) toDesk();
 });
+</script>
+<script>
+  import Lenis from "lenis";
+  import "lenis/dist/lenis.css";
+
+  const sheetLenis = new Map<HTMLElement, Lenis>();
+
+  document.querySelectorAll<HTMLElement>(".sheet").forEach((wrapper) => {
+    const lenis = new Lenis({
+      wrapper,
+      content: wrapper,
+      eventsTarget: wrapper,
+      autoRaf: true,
+      duration: 0.32,
+      smoothWheel: true,
+      syncTouch: false,
+      wheelMultiplier: 1,
+      overscroll: true,
+      stopInertiaOnNavigate: true,
+      respectReducedMotion: true,
+    });
+
+    sheetLenis.set(wrapper, lenis);
+  });
+
+  (window as any).__sheetLenis = sheetLenis;
+  (window as any).syncSheetLenis?.();
 </script>
 </body>
 </html>

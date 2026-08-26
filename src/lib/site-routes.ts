@@ -64,8 +64,8 @@ const STATIC_META: Record<string, Omit<RouteMeta, "canonicalPath">> = {
     type: "article",
   },
   "/work/archive/dustin-home": {
-    title: "Dustin Home checkout research — Timeyin Gordon",
-    description: "UX research and recommendations for improving the consumer checkout experience at Dustin Home.",
+    title: "What if checkout was your biggest competitor? | Timeyin Gordon",
+    description: "UX research tracing Dustin Home's checkout friction to trust, guest-checkout hierarchy and product-review gaps, with evidence-backed recommendations.",
     type: "article",
   },
   "/work/archive/3d-motion": {
@@ -104,8 +104,8 @@ const STATIC_META: Record<string, Omit<RouteMeta, "canonicalPath">> = {
     type: "website",
   },
   "/craft/ply": {
-    title: "Ply canvas editor — Timeyin Gordon",
-    description: "Building an infinite-canvas editor and learning what direct manipulation, selection state and undo really cost.",
+    title: "Ply — Learning how a design canvas really works | Timeyin Gordon",
+    description: "An independent exploration of rendering, coordinate systems, nodes, overlays and what it takes to make a hybrid PixiJS and React canvas feel natural.",
     type: "article",
   },
   "/craft/threadmark": {

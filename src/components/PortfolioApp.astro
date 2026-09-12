@@ -113,9 +113,7 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
     transform:rotate(1.5deg);
     background:
       repeating-linear-gradient(90deg,var(--mat-line) 0 1px,transparent 1px 44px),
-      repeating-linear-gradient(0deg,var(--mat-line) 0 1px,transparent 1px 44px),
-      linear-gradient(118deg,transparent 22.5%,rgba(217,194,74,.5) 22.5%,rgba(217,194,74,.5) 22.62%,transparent 22.62%),
-      linear-gradient(118deg,transparent 26.4%,rgba(217,194,74,.28) 26.4%,rgba(217,194,74,.28) 26.5%,transparent 26.5%);
+      repeating-linear-gradient(0deg,var(--mat-line) 0 1px,transparent 1px 44px);
   }
   body::after{
     content:""; position:fixed; inset:0; z-index:0; pointer-events:none;

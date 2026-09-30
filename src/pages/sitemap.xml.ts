@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { getSitemapRoutes, SITE_URL } from "../lib/site-routes";
 import { getSubstackPosts } from "../lib/substack";
+import { COMING_SOON } from "../lib/site-state";
 
 function escapeXml(value: string): string {
   return value.replace(/[<>&'\"]/g, (character) => ({
@@ -13,8 +14,8 @@ function escapeXml(value: string): string {
 }
 
 export const GET: APIRoute = async () => {
-  const posts = await getSubstackPosts();
-  const urls = getSitemapRoutes(posts)
+  const routes = COMING_SOON ? ["/"] : getSitemapRoutes(await getSubstackPosts());
+  const urls = routes
     .map((path) => `  <url><loc>${escapeXml(new URL(path, SITE_URL).href)}</loc></url>`)
     .join("\n");
 

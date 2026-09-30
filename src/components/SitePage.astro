@@ -1,0 +1,7 @@
+---
+import ComingSoon from "./ComingSoon.astro";
+import PortfolioApp from "./PortfolioApp.astro";
+import { COMING_SOON } from "../lib/site-state";
+---
+
+{COMING_SOON ? <ComingSoon /> : <PortfolioApp />}

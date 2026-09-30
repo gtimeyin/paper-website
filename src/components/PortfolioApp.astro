@@ -66,7 +66,8 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
   });
 </script>
 
-<style is:global>
+<!-- Keep portfolio styles with this document when the coming-soon page is active. -->
+<style is:inline>
   :root{
     --mat:#14161A;
     --mat-line:rgba(255,255,255,.06);

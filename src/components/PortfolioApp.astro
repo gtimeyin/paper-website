@@ -499,6 +499,9 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
   .more:hover{color:var(--accent)}
 
   /* notes to self: obviously not body copy, and removable before launch */
+  /* empty picture slots read as unfinished work; they only show while drafting */
+  body:not(.drafts) .fig:has(> .box),
+  body:not(.drafts) .figrow{display:none}
   .todo{display:inline-block; font-family:var(--util); font-style:normal;
     font-size:11.5px; line-height:1.45; letter-spacing:.01em;
     color:#8a6a34; background:rgba(224,154,31,.1);
@@ -608,6 +611,16 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
     border-bottom:1px solid var(--rule)}
   .note b{display:block; font-family:var(--util); font-size:8.5px; font-weight:600;
     letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:5px}
+  .note .from{display:block; font-family:var(--util); font-size:8.5px; font-weight:600;
+    letter-spacing:.12em; text-transform:uppercase; color:var(--accent); margin-bottom:4px}
+  .note .go{display:block; background:none; border:0; padding:0; margin-top:7px; cursor:pointer;
+    font-family:var(--util); font-size:9px; font-weight:600; letter-spacing:.13em;
+    text-transform:uppercase; color:var(--ink-soft)}
+  .note .go:hover{color:var(--accent)}
+  /* the passage a search pointed at, marked briefly where it sits */
+  .prose .found{background:rgba(46,107,83,.1); box-shadow:0 0 0 8px rgba(46,107,83,.1);
+    transition:background .6s ease, box-shadow .6s ease}
+  .prose :is(p,li,blockquote,h3){scroll-margin-top:120px}
   .addnote{width:100%; display:flex; justify-content:space-between; align-items:center;
     background:none;border:0;padding:10px 0 2px;cursor:pointer;
     font-family:var(--util);font-size:9px;font-weight:600;letter-spacing:.13em;
@@ -852,7 +865,20 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
     .gloss-note{position:static; width:auto; margin-top:26px; opacity:1;
       transform:none; pointer-events:auto}
     .prose{margin-left:0}
-    .prose .fig,.prose .fig.portrait{width:100%}
+    /* the indent is gone, so the elements that hang back to the margin must not */
+    .prose:not(.wide) .pull,
+    .prose:not(.wide) > p:first-of-type,
+    .prose:not(.wide) .facts{margin-left:0}
+    .prose blockquote{max-width:none}
+    .feed-article img{max-width:100%}
+    .prose .fig,.prose .fig.portrait,.figrow{width:100%}
+    .rows.contents .row{grid-template-columns:1fr 20px; gap:6px 12px}
+    .rows.contents .row .mk{grid-column:1; grid-row:1}
+    .rows.contents .row h3{grid-column:1; grid-row:2}
+    .rows.contents .ty{grid-column:1; grid-row:3; padding-left:0}
+    .rows.contents .ar{grid-column:2; grid-row:2}
+    .mast-nav{gap:8px 14px}
+    .sig-mark{width:100%; margin-right:0}
     .prose table{width:100%; display:block; overflow-x:auto}
     .reader{left:auto; right:3vw; width:196px}
     .reader-panel{width:196px}
@@ -907,8 +933,8 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
 
       <div class="contents-head reveal" style="--d:.32s">
         <input id="ask" class="ask" type="text" autocomplete="off" spellcheck="false"
-               placeholder="Ask about the work, or browse the index below"
-               aria-label="Ask a question about the work">
+               placeholder="Search the work, or browse the index below"
+               aria-label="Search the work">
         <div class="filter" id="filter" role="tablist" aria-label="Filter contents"></div>
       </div>
       <div class="answer" id="answer" hidden></div>
@@ -1100,7 +1126,7 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
     <div class="reader-body">
       <nav class="toc" id="toc"></nav>
       <div id="notes"></div>
-      <button class="addnote" id="addnote"><span>Ask about this section</span><span>+</span></button>
+      <button class="addnote" id="addnote"><span>Find in this piece</span><span>+</span></button>
     </div>
   </div>
 </aside>
@@ -2373,11 +2399,10 @@ const AR_SVG = `<svg class="ar" width="15" height="15" viewBox="0 0 15 15" fill=
 
 /* ---------- asking ----------
    Retrieval is deterministic and local: the index is searched here, in the
-   browser, over Timeyin's own words. The model is only ever shown the passages
-   that retrieval already surfaced, and is only asked to write one or two
-   sentences over them. It cannot choose its own sources, so it cannot invent a
-   job, a client or a date — the worst failure mode for a site like this.
-   If the model is unreachable the retrieval still stands on its own. */
+   browser, over Timeyin's own words. Nothing is generated — the result is the
+   matching pieces (on the index) or the matching passage (inside a piece), so
+   it cannot invent a job, a client or a date, and it never claims to have read
+   something it has not. */
 
 const STOP = new Set(("a an the and or but of to in on for with about at by from is are was were be been "+
   "do does did he she it they what which who whom whose how why when where has have had "+
@@ -2428,12 +2453,6 @@ function retrieve(q, n){
   return scored.slice(0, n || 4);
 }
 
-async function synthesise(){
-  /* Keep launch search entirely client-side. A future server endpoint can add
-     synthesis without exposing a provider key in the browser. */
-  return "";
-}
-
 let results = null;
 const hoverPreview=$("index-preview");
 const hoverPreviewTitle=$("index-preview-title");
@@ -2464,7 +2483,7 @@ function clearAsk(){
   paintFilter(); paintContents();
 }
 
-async function runAsk(q){
+function runAsk(q){
   const a = $("answer");
   const hits = retrieve(q, 4);
 
@@ -2483,18 +2502,10 @@ async function runAsk(q){
   results = hits.map(h => h.doc.item);
   paintContents();
   a.hidden = false;
-  a.innerHTML = `<p class="kicker">Reading ${hits.length} piece${hits.length>1?"s":""}…</p>`;
-
-  let said = "";
-  try { said = await synthesise(q, hits); } catch(e){ said = ""; }
-
-  const covered = said && said.indexOf("NOT_COVERED") === -1;
   a.innerHTML =
-    `<p class="kicker">${covered ? "From his own writing" : "Closest in the index"}</p>` +
-    (covered ? `<p class="said">${said}</p>` : "") +
-    `<p class="caveat">${covered
-        ? "Answered only from the pieces listed below — every source is open underneath, so you can check it."
-        : "The answer is the work itself; these are the pieces that match."}</p>
+    `<p class="kicker">${hits.length} matching piece${hits.length>1?"s":""}</p>
+     <p class="caveat">A keyword search over the work, side projects and field notes, best match first.
+     Nothing here is generated; open a piece to read it in context.</p>
      <button class="clear" id="clearask">Clear</button>`;
   $("clearask").addEventListener("click", clearAsk);
 }
@@ -2633,40 +2644,87 @@ if(document.fonts&&document.fonts.ready){
   document.fonts.ready.then(()=>{ if(active){ measure(); progress(); } });
 }
 
+/* on a phone the open panel would sit over the text, so it starts folded */
+const narrow=window.matchMedia("(max-width:820px)");
+if(narrow.matches){
+  $("reader").classList.remove("open");
+  $("readertop").setAttribute("aria-expanded","false");
+}
 $("readertop").addEventListener("click",()=>{
   const open=$("reader").classList.toggle("open");
   $("readertop").setAttribute("aria-expanded",String(open));
 });
-/* Surface two: the same engine, anchored to the passage you are reading.
-   Retrieval is scoped to this piece, so an answer here can only come from it. */
+/* Surface two: the same search, scoped to the piece you are reading. It never
+   writes an answer; it points at the passage that matches best, so the reader
+   can check it in place. A term found in the section's own heading counts too,
+   since "the decision ladder" is usually named there rather than in the prose. */
+function findPassage(q){
+  const ts = terms(q);
+  const prose = active && active.querySelector(".r-body");
+  if(!ts.length || !prose) return null;
+  const count = (str, w) => {
+    const e = w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+    return (str.match(new RegExp("\\b"+e+"\\b","g")) || []).length * 2 +
+           (str.match(new RegExp("\\b"+e,"g")) || []).length;
+  };
+  let best = null, head = null;
+  prose.querySelectorAll("h2[data-toc], p, li, blockquote, h3.claim").forEach(el=>{
+    if(el.matches("h2")){ head = el; return; }
+    if(el.closest("figure, .todo, .signoff") || el.querySelector("p")) return;
+    const text = el.textContent.toLowerCase(), title = head ? head.textContent.toLowerCase() : "";
+    let sc = 0, hit = 0;
+    ts.forEach(w => { const n = count(text, w) + count(title, w) * 2; sc += n; if(n) hit++; });
+    sc += hit * 6;  /* breadth over repetition */
+    if(hit && (!best || sc > best.sc)) best = { el, head, sc };
+  });
+  return best;
+}
+
 $("addnote").addEventListener("click",()=>{
   if($("notes").querySelector("input"))return;
-  const cur = heads.find(h=>h.getBoundingClientRect().top>=0) || heads[heads.length-1];
-  const section = cur ? cur.textContent : "this page";
   const wrap=document.createElement("div");
-  wrap.innerHTML=`<input class="noteinput" placeholder="Ask about “${section}”">`;
+  wrap.innerHTML=`<input class="noteinput" placeholder="Find a passage in this piece" aria-label="Find a passage in this piece">`;
   $("notes").appendChild(wrap);
   const inp=wrap.querySelector("input"); inp.focus();
 
-  inp.addEventListener("keydown", async ev=>{
+  inp.addEventListener("keydown", ev=>{
     ev.stopPropagation();
     if(ev.key==="Escape"){ wrap.remove(); return; }
     if(ev.key!=="Enter" || !inp.value.trim()) return;
 
     const q = inp.value.trim();
-    wrap.innerHTML = `<div class="note">Reading…</div>`;
-
-    const here = stack[stack.length-1];
-    const doc = CORPUS.find(d => d.title === here.title);
-    let said = "";
-    if(doc){
-      try { said = await synthesise(q, [{doc}]); } catch(e){ said = ""; }
+    const found = findPassage(q);
+    const note = document.createElement("div");
+    note.className = "note";
+    const b = document.createElement("b"); b.textContent = q; note.appendChild(b);
+    if(!found){
+      note.append("None of those words appear in this piece.");
+    }else{
+      const text = found.el.textContent.replace(/\s+/g," ").trim();
+      const from = document.createElement("span");
+      from.className = "from";
+      from.textContent = found.head ? "From “" + found.head.textContent + "”" : "From the opening";
+      const said = document.createElement("span");
+      said.textContent = text.length > 240 ? text.slice(0, 237).replace(/\s+\S*$/,"") + "…" : text;
+      const go = document.createElement("button");
+      go.className = "go"; go.textContent = "Show in the piece";
+      go.addEventListener("click", ()=>{
+        if(narrow.matches){ $("reader").classList.remove("open"); $("readertop").setAttribute("aria-expanded","false"); }
+        markPassage(found.el);
+      });
+      note.append(from, said, go);
     }
-    const covered = said && said.indexOf("NOT_COVERED") === -1;
-    wrap.innerHTML = `<div class="note"><b>${q}</b>${
-      covered ? said : "Not covered in this piece."}</div>`;
+    wrap.replaceWith(note);
   });
 });
+
+function markPassage(el){
+  if(!active) return;
+  active.querySelectorAll(".found").forEach(n=>n.classList.remove("found"));
+  el.classList.add("found");
+  moveSheet(active, el);
+  setTimeout(()=>el.classList.remove("found"), 2600);
+}
 
 function restoreRoute(path){
   stack=routeStack(path);
@@ -2843,6 +2901,7 @@ const PLAYGROUND_ENABLED = false;
 
 /* Editorial placeholders. Set to false to strip every note-to-self before launch. */
 const DRAFT_NOTES = false;
+document.body.classList.toggle("drafts", DRAFT_NOTES);
 if(!DRAFT_NOTES){
   const strip = () => document.querySelectorAll(".todo").forEach(n=>n.remove());
   strip();

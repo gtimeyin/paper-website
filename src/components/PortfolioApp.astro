@@ -66,7 +66,8 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
   });
 </script>
 
-<style is:global>
+<!-- Keep portfolio styles with this document when the coming-soon page is active. -->
+<style is:inline>
   /* Geist Serif carries the headings and body; Newsreader stays as the fallback */
   @font-face{font-family:"Geist Serif"; src:url("/fonts/GeistSerif-Regular.ttf") format("truetype");
     font-weight:400; font-style:normal; font-display:swap}
@@ -396,6 +397,9 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
     .prose .part,.prose .opts{width:100%}
     .prose .opts{grid-template-columns:1fr}
   }
+  .prose > .avatar{display:block; width:clamp(96px,8vw,128px); height:auto; aspect-ratio:1;
+    border-radius:16px; margin:0 0 28px; background:#4a6670}
+  .prose:not(.wide) > .avatar{margin-left:calc(-1 * clamp(0px,11vw,260px))}
   /* the About page's visual diary: two loops side by side, then a grid of renders */
   .gallery{display:grid; gap:10px; width:min(790px,52vw); margin:clamp(28px,3.5vh,44px) 0 0}
   .gallery.two{grid-template-columns:1fr 1fr}
@@ -2351,12 +2355,13 @@ const ABOUT = {
   byline:"Timeyin Gordon — product design engineer.",
   flat:true,
   intro:`
+<img class="avatar" src="/about/avatar.jpg" alt="Illustrated portrait of Timeyin Gordon in a beanie, glasses and an orange jacket" width="600" height="600">
 <p>I'm a product design engineer. I design agentic products, I build them in code, and I stay
 for the part where they ship. To me that's one job; on most org charts it's two. Whatever the
 product, the work comes down to one thing: turning a complex system into something a person can
 trust enough to act on.</p>
 
-<figure class="fig portrait" style="width:min(440px,100%)"><img src="/about/portrait.jpg" alt="Timeyin Gordon standing in front of the Museum of the Future, beside a large mirrored sculpture" loading="lazy"><figcaption>Off the clock, at the Museum of the Future.</figcaption></figure>
+<figure class="fig portrait" style="width:min(560px,100%)"><img src="/about/portrait.jpg" alt="Timeyin Gordon standing in front of the Museum of the Future, beside a large mirrored sculpture" loading="lazy"><figcaption>Off the clock, at the Museum of the Future.</figcaption></figure>
 
 <h2 data-toc class="sec">The story</h2>
 <p>It started with curiosity. One of my earliest memories is of the family television, the magic

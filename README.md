@@ -13,6 +13,13 @@ npm run dev
 
 The development server runs at `http://localhost:4321`.
 
+## Coming-soon state
+
+The site currently shows “Site in progress” on the homepage and existing portfolio
+routes. Set `COMING_SOON` to `false` in `src/lib/site-state.ts` to restore the full
+portfolio and sitemap, then rebuild for deployment. The original portfolio is
+preserved in `src/components/PortfolioApp.astro`.
+
 ## Production build
 
 ```bash

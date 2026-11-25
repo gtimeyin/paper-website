@@ -1,0 +1,9 @@
+---
+import ComingSoon from "./ComingSoon.astro";
+import PortfolioApp from "./PortfolioApp.astro";
+import { COMING_SOON, isOpenRoute } from "../lib/site-state";
+
+const showPortfolio = !COMING_SOON || isOpenRoute(Astro.url.pathname);
+---
+
+{showPortfolio ? <PortfolioApp /> : <ComingSoon />}

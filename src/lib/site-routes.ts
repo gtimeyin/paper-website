@@ -12,6 +12,7 @@ export interface RouteMeta {
 export const STATIC_ROUTES = [
   "/",
   "/work",
+  "/work/max",
   "/work/search-as-home",
   "/work/risk-to-action",
   "/work/visualization-library",
@@ -42,6 +43,11 @@ const STATIC_META: Record<string, Omit<RouteMeta, "canonicalPath">> = {
     title: "Selected work — Timeyin Gordon",
     description: "Product design and design-engineering work across agentic procurement, risk intelligence, design systems and independent products.",
     type: "website",
+  },
+  "/work/max": {
+    title: "Beroe MAX: agentic AI for procurement — Timeyin Gordon",
+    description: "Designing and building MAX V2, Beroe's procurement advisor: answers you can check, documents that keep their sources, and one place to decide.",
+    type: "article",
   },
   "/work/search-as-home": {
     title: "Search as home — Timeyin Gordon",
@@ -130,7 +136,7 @@ const STATIC_META: Record<string, Omit<RouteMeta, "canonicalPath">> = {
   },
   "/about": {
     title: "About Timeyin Gordon — Product design engineer",
-    description: "Designer, engineer and maker with eight years across agentic products, design systems, fintech, motion and independent ventures.",
+    description: "Designer, engineer and maker with 11 years across agentic products, design systems, fintech, motion and independent ventures.",
     type: "website",
   },
 };

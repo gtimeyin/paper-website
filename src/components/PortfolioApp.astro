@@ -67,6 +67,13 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
 </script>
 
 <style is:global>
+  /* Geist Serif carries the headings and body; Newsreader stays as the fallback */
+  @font-face{font-family:"Geist Serif"; src:url("/fonts/GeistSerif-Regular.ttf") format("truetype");
+    font-weight:400; font-style:normal; font-display:swap}
+  /* only the Regular weight exists, so never let the browser fake a bold or italic;
+     emphasis is carried by the darker ink instead */
+  body{font-synthesis:none}
+  .prose strong,.prose b,.trial .try{color:var(--ink)}
   :root{
     --mat:#14161A;
     --mat-line:rgba(255,255,255,.06);
@@ -81,7 +88,7 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
     --accent:#2E6B53;
     --accent-wash:#DCE5DE;
 
-    --display:"Newsreader",Georgia,"Times New Roman",serif;
+    --display:"Geist Serif","Newsreader",Georgia,"Times New Roman",serif;
     /* matches the mono/ ramp in the Figma file */
     --util:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
     --script:"Mrs Saint Delafield","Segoe Script",cursive;
@@ -105,6 +112,7 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
   body{
     margin:0; overflow:hidden;
     font-family:var(--display); color:var(--ink);
+    letter-spacing:.012em; /* Geist Serif sets tight; open it slightly */
     background:var(--mat);
   }
   /* the mat sits slightly off-axis, so the paper laid on it reads as placed by hand */
@@ -177,6 +185,9 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
   .sheet.back{background:var(--paper-back); filter:brightness(.985)}
   .sheet.back > *{opacity:.5}
   .sheet.back{pointer-events:none; overflow:hidden}
+  /* while reading, the sheets behind fade back into the desk so the front page
+     and the bookmark hanging off it carry the eye; the playground keeps them solid */
+  body:not(.desk) .sheet.back{opacity:.45}
 
   /* the reading sheet waits off to the right until it is opened */
   /* a sheet that is not in play waits off to the right */
@@ -216,7 +227,7 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
   /* ---------- index ---------- */
   .eyebrow{margin:clamp(44px,8vh,96px) 0 20px}
   h1.display{font-weight:400; font-size:clamp(38px,5.4vw,106px); line-height:1.03;
-    letter-spacing:-.022em; margin:0; max-width:14ch}
+    letter-spacing:-.004em; margin:0; max-width:14ch}
   h1.display .green{color:var(--accent)}
   /* The load-bearing word in the sentence defines itself. Outlined until you
      ask, then filled — and the note lands in the empty right column, absolutely
@@ -260,7 +271,7 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
   .entry .num{font-family:var(--util);font-size:10px;letter-spacing:.1em;
     color:var(--ink-soft);padding-top:8px}
   .entry h2{font-weight:400; margin:0; font-size:clamp(21px,2.1vw,35px);
-    line-height:1.2; letter-spacing:-.012em; max-width:24ch}
+    line-height:1.2; letter-spacing:.006em; max-width:24ch}
   .entry .sub{margin:10px 0 0;display:flex;gap:14px;flex-wrap:wrap}
   .entry .arrow{justify-self:end;padding-top:6px;color:var(--ink-soft);
     transition:transform .35s cubic-bezier(.16,1,.3,1),color .35s}
@@ -269,7 +280,7 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
   /* ---------- reading ---------- */
   .byline{font-family:var(--util);font-size:11.5px;color:var(--ink-soft);margin:24px 0 0}
   #read h1.display,#read2 h1.display{margin-top:clamp(40px,7vh,84px)}
-  .prose{max-width:33em; margin:44px 0 0 clamp(0px,11vw,260px);
+  .prose{max-width:38em; margin:44px 0 0 clamp(0px,11vw,260px);
     font-size:clamp(16px,1.2vw,20px); line-height:1.74; color:#33383b}
   .prose p{margin:0 0 1.5em}
   .prose code{font-family:var(--util); font-size:.84em; padding:.12em .32em;
@@ -300,6 +311,7 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
      prose, quotes and figures all share a single left edge. */
   .prose:not(.wide) .pull,
   .prose:not(.wide) > p:first-of-type,
+  .prose:not(.wide) > p.lede,
   .prose:not(.wide) .facts{margin-left:calc(-1 * clamp(0px,11vw,260px))}
 
   /* figures grow to the right rather than breaking the left edge */
@@ -307,15 +319,16 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
   .prose .fig{width:min(790px, 52vw); max-width:none}
 
   /* lede */
-  .prose > p:first-of-type{
-    font-size:1.24em; line-height:1.48; letter-spacing:-.006em;
-    color:var(--ink); max-width:26em; margin-bottom:1.9em;
+  .prose > p:first-of-type,
+  .prose > p.lede{
+    font-size:1.24em; line-height:1.48; letter-spacing:.012em;
+    color:var(--ink); max-width:32em; margin-bottom:1.9em;
   }
 
   /* pull quote: scale and space carry it, with a short mark instead of a bar */
   .prose blockquote{
     position:relative; margin:clamp(48px,5.5vh,78px) 0; padding-top:22px; border:0;
-    font-size:clamp(24px,2.1vw,34px); line-height:1.2; letter-spacing:-.018em;
+    font-size:clamp(24px,2.1vw,34px); line-height:1.2; letter-spacing:0em;
     color:var(--ink); max-width:17ch;
   }
   .prose blockquote::before{content:""; position:absolute; top:0; left:0;
@@ -327,13 +340,13 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
      Reading only the claims gives you the whole case. */
   .prose h3.claim{
     font-family:var(--display); font-weight:400;
-    font-size:clamp(23px,2.15vw,36px); line-height:1.14; letter-spacing:-.02em;
+    font-size:clamp(23px,2.15vw,36px); line-height:1.14; letter-spacing:-.002em;
     color:var(--ink); margin:0 0 .62em; max-width:none;
   }
   .prose h3.claim + p{margin-top:0}
 
   /* the facts a hiring manager checks first */
-  .facts{display:flex; flex-wrap:wrap; gap:clamp(26px,4vw,64px);
+  .facts{display:flex; flex-wrap:wrap; gap:clamp(22px,2.6vw,44px);
     margin:0 0 2.6em; padding-top:20px; border-top:1px solid var(--rule)}
   .facts div{min-width:120px}
   .facts dt{font-family:var(--util); font-size:9.5px; font-weight:600;
@@ -353,6 +366,50 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
   .fig img{display:block; width:100%; height:auto; border:1px solid var(--rule);
     background:#eef2f4}
   .fig.portrait{width:min(620px,42vw)}
+  .fig.loop-square{width:min(560px,100%)}
+  .fig.loop-square video{display:block; width:100%; aspect-ratio:1; object-fit:cover;
+    border-radius:6px; background:#c83a5a}
+  /* ---------- editorial structure: parts, numbered sections, compared options ---------- */
+  .prose .part{display:flex; align-items:baseline; gap:18px; margin:clamp(110px,14vh,180px) 0 0;
+    padding-top:16px; border-top:1.5px solid var(--ink); width:min(790px,52vw)}
+  .prose .part-n{font-family:var(--util); font-size:9.5px; font-weight:600; letter-spacing:.13em;
+    text-transform:uppercase; color:var(--accent); flex:none}
+  .prose .part-t{font-family:var(--display); font-size:clamp(30px,3vw,48px); line-height:1.05; color:var(--ink)}
+  .prose .part-intro{margin:14px 0 0; font-size:1.06em; color:var(--ink-soft); max-width:30em}
+  .prose h2.feat{margin-top:clamp(88px,11vh,140px); padding-top:16px; border-top:1px solid var(--rule); width:min(790px,52vw)}
+  @media (max-width:900px){.prose h2.feat{width:100%}}
+  .prose h2.feat[data-n]::before{content:attr(data-n); color:var(--accent); margin-right:12px}
+  .prose .part + h2.feat,.prose .part-intro + h2.feat{margin-top:clamp(44px,6vh,70px)}
+  .prose h2.feat + h3.claim{margin-top:6px}
+  .prose .opts{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:1.8em 0 2.2em;
+    width:min(790px,52vw)}
+  .prose .opt{padding:18px 20px 20px; border:1px solid var(--rule); border-radius:8px;
+    background:rgba(23,25,27,.015)}
+  .prose .opt.chosen{border-color:rgba(46,107,83,.55); background:rgba(220,229,222,.45)}
+  .prose .opt p{margin:0; font-size:.93em; line-height:1.55}
+  .prose .opt .opt-k{font-family:var(--util); font-size:9.5px; font-weight:600; letter-spacing:.13em;
+    text-transform:uppercase; color:var(--ink-soft); margin-bottom:10px}
+  .prose .opt.chosen .opt-k{color:var(--accent)}
+  .prose .opt .opt-t{font-size:1.12em; line-height:1.3; color:var(--ink); margin-bottom:8px}
+  .prose .fig.vid{margin:clamp(40px,5vh,64px) 0}
+  @media (max-width:900px){
+    .prose .part,.prose .opts{width:100%}
+    .prose .opts{grid-template-columns:1fr}
+  }
+  /* the About page's visual diary: two loops side by side, then a grid of renders */
+  .gallery{display:grid; gap:10px; width:min(790px,52vw); margin:clamp(28px,3.5vh,44px) 0 0}
+  .gallery.two{grid-template-columns:1fr 1fr}
+  .gallery.three{grid-template-columns:repeat(3,1fr); margin-top:10px}
+  .gallery video,.gallery img{display:block; width:100%; height:100%; object-fit:cover;
+    border-radius:6px; background:#e7e5df}
+  .gallery.two video{aspect-ratio:9/16}
+  .gallery.three img{aspect-ratio:1}
+  .prose .gallery-cap{margin:11px 0 clamp(28px,3.5vh,44px); font-family:var(--util); font-size:11px;
+    color:var(--ink-soft); line-height:1.6}
+  @media (max-width:900px){.gallery{width:100%}}
+  /* looping product animations: the poster holds the frame until it plays */
+  .fig.vid video{display:block; width:100%; height:auto; aspect-ratio:1440/1040;
+    border-radius:10px; background:#ebe4fb; box-shadow:0 0 0 1px var(--rule)}
   .fig .box{border:1px solid var(--rule); background:rgba(23,25,27,.02);
     aspect-ratio:16/10; display:flex; align-items:center; justify-content:center;
     text-align:center; padding:24px}
@@ -384,7 +441,7 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
     width:100%; text-align:left; background:none; border:0; padding:0; cursor:pointer;
     color:inherit; font:inherit; text-decoration:none}
   .next-row h3{font-family:var(--display); font-weight:400; margin:0;
-    font-size:clamp(19px,1.6vw,27px); line-height:1.22; letter-spacing:-.012em; max-width:24ch}
+    font-size:clamp(19px,1.6vw,27px); line-height:1.22; letter-spacing:.006em; max-width:24ch}
   .next-row .ar{flex-shrink:0; color:var(--ink-soft); transition:transform .35s cubic-bezier(.16,1,.3,1), color .35s}
   .next-row:hover h3{color:var(--accent)}
   .next-row:hover .ar{transform:translate(4px,-4px); color:var(--accent)}
@@ -395,7 +452,7 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
   .row{
     display:grid; grid-template-columns:78px 1fr 30px; gap:16px; align-items:start;
     width:100%; text-align:left; background:none; border:0;
-    border-bottom:1px solid var(--rule); padding:26px 0 24px; cursor:pointer;
+    border-bottom:1px solid var(--rule); padding:26px 14px 24px 0; cursor:pointer;
     font:inherit; color:inherit; text-decoration:none;
     transition:background .35s ease, padding-left .35s ease;
   }
@@ -403,7 +460,7 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
   .row .mk{font-family:var(--util); font-size:9.5px; font-weight:600; letter-spacing:.12em;
     text-transform:uppercase; color:var(--ink-soft); padding-top:10px}
   .row h3{font-family:var(--display); font-weight:400; margin:0;
-    font-size:clamp(20px,1.9vw,33px); line-height:1.22; letter-spacing:-.012em; max-width:26ch}
+    font-size:clamp(20px,1.9vw,33px); line-height:1.22; letter-spacing:.006em; max-width:26ch}
   .row .m{margin:9px 0 0; font-family:var(--util); font-size:9.5px; font-weight:600;
     letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft)}
   .row .ar{justify-self:end; padding-top:8px; color:var(--ink-soft);
@@ -453,7 +510,7 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
     color:var(--ink-mid); max-width:46em}
   .rows.contents .row{
     grid-template-columns:clamp(80px,8vw,124px) 1fr auto 26px;
-    align-items:baseline; padding:21px 0 19px;
+    align-items:baseline; padding:21px 14px 19px 0;
   }
   .rows.contents .row h3{max-width:none; font-size:clamp(19px,1.62vw,27px)}
   .rows.contents .mk{padding-top:0}
@@ -514,7 +571,7 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
   .tab{
     background:none; border:0; padding:0; cursor:pointer; display:flex; gap:10px;
     align-items:flex-start; font-family:var(--display); font-weight:400;
-    font-size:clamp(28px,4.2vw,70px); line-height:1.04; letter-spacing:-.02em;
+    font-size:clamp(28px,4.2vw,70px); line-height:1.04; letter-spacing:-.002em;
     color:var(--ink-soft); transition:color .3s ease;
   }
   .tab.on{color:var(--ink)}
@@ -541,7 +598,9 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
   .prose .line{margin:0 0 8px; max-width:34em}
   .prose .set{font-family:var(--util); font-size:12px; letter-spacing:.03em;
     line-height:1.9; color:var(--ink-mid); margin:0; max-width:none}
-  .row.flat{cursor:default}
+  .row.flat{cursor:default; padding-right:0; grid-template-columns:116px minmax(0,1fr) minmax(0,1fr)}
+  .row .role{margin:0; font-family:var(--display); font-weight:400;
+    font-size:clamp(20px,1.9vw,33px); line-height:1.22; letter-spacing:.006em; color:var(--ink-soft)}
   .row.flat:hover{background:none; padding-left:0}
 
   /* a piece ends the way a letter does */
@@ -558,8 +617,9 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
   .prose .queue p{margin:0 0 .7em; font-size:.95em; color:var(--ink-mid)}
 
   /* ---------- reading widget ---------- */
-  /* A bookmark tab, not a floating panel. It sits on the page's own right margin
-     and straddles the top edge of the sheet, so it reads as attached to the paper. */
+  /* A bookmark tab, not a floating panel. On narrower screens it sits on the page's
+     own right margin and straddles the top edge of the sheet, so it reads as attached
+     to the paper; wider screens hang it off the left edge instead (see below). */
   .reader{
     position:absolute; z-index:9; width:238px;
     left:calc(var(--front-x) + var(--measure) - var(--pad-x) - 238px);
@@ -584,6 +644,8 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
     border:1px solid var(--rule); border-top:0}
   /* the bar is divided into one segment per section, sized by how long that section runs */
   .reader-bar{display:flex; align-items:flex-end; gap:2px; height:7px; padding:13px 14px 5px}
+  /* the segmented bar is hidden; the percentage beside the kicker says the same */
+  .reader .reader-bar{display:none}
   .seg{position:relative; height:3px; padding:0; border:0; background:rgba(23,25,27,.14);
     cursor:pointer; transition:height .25s ease, background .25s ease}
   .seg > i{display:block; height:100%; width:0; background:var(--accent);
@@ -628,6 +690,33 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
   .addnote:hover{color:var(--accent)}
   .noteinput{width:100%;margin-top:8px;padding:7px 9px;border:1px solid var(--rule);
     background:transparent;font-family:var(--display);font-size:13px;color:var(--ink)}
+  /* Where the desk shows enough of itself, the bookmark moves off the paper: it hangs
+     from the sheet's left edge, a third of the way down, out over the desk. It is cut
+     from the same paper and has no right edge, so it reads as attached to the sheet. */
+  @media (min-width:1100px){
+    /* While reading, the fan behind the page closes into one flat, blank column on
+       the left, and the pad steps away. The bookmark is then plain type on that
+       column: no box, no rules, nothing competing with the page. */
+    body.reading:not(.desk) .sheet.back{opacity:1;
+      transform:translate(calc(var(--front-x) * -1), 0) rotate(0deg)}
+    body.reading:not(.desk) .sheet.back > *{opacity:0}
+    body.reading:not(.desk) .pad{opacity:0}
+
+    .reader{left:24px; width:calc(var(--front-x) - 48px);
+      top:clamp(110px, 28vh, 300px); align-items:stretch; transform:translateX(-6px)}
+    body.reading .reader{transform:none}
+    .reader-tab{align-self:flex-start; padding:0; margin:0 0 12px;
+      background:none; border:0; color:var(--ink-soft)}
+    .reader-panel{width:auto; background:none; border:0}
+    .reader-bar{padding:0 0 18px}
+    .reader-now{display:none}
+    .reader-body{padding:0}
+    .toc a{padding:5px 0; border:0; color:var(--ink-soft)}
+    .toc a::before{display:none}
+    .toc a.here{color:var(--ink)}
+    .note{padding-left:0}
+    .addnote{justify-content:flex-start; gap:8px; padding-top:18px; color:var(--ink-soft)}
+  }
 
   /* ---------- boot ---------- */
   /* the wait is real: type must load before anything renders, or the serif
@@ -726,7 +815,7 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
   .propcard .kicker{margin-bottom:9px; color:var(--ink-soft)}
   .propcard h4{
     margin:0; font-family:var(--display); font-weight:400;
-    font-size:23px; line-height:1.2; letter-spacing:-.012em; color:var(--ink);
+    font-size:23px; line-height:1.2; letter-spacing:.006em; color:var(--ink);
   }
   .propcard p{margin:11px 0 0; font-size:14px; line-height:1.55; color:var(--ink-mid)}
   .propcard .edge{
@@ -872,6 +961,8 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
     .prose blockquote{max-width:none}
     .feed-article img{max-width:100%}
     .prose .fig,.prose .fig.portrait,.figrow{width:100%}
+    .row.flat{grid-template-columns:100px minmax(0,1fr); gap:6px 16px}
+    .row.flat .role{grid-column:2}
     .rows.contents .row{grid-template-columns:1fr 20px; gap:6px 12px}
     .rows.contents .row .mk{grid-column:1; grid-row:1}
     .rows.contents .row h3{grid-column:1; grid-row:2}
@@ -944,10 +1035,6 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
         <div class="col">
           <div class="lbl">Practice</div>
           <p>Neuro 6, the studio I have run since 2018 — alongside the day job, for four years.</p>
-        </div>
-        <div class="col">
-          <div class="lbl">Availability</div>
-          <p>Lagos → Canada. GTS-eligible under NOC 21233: a ten-day LMIA, a two-week permit.</p>
         </div>
         <div class="col">
           <div class="lbl">Elsewhere</div>
@@ -1211,7 +1298,201 @@ const POSTS = Array.isArray(window.__SUBSTACK_POSTS__) && window.__SUBSTACK_POST
   ? window.__SUBSTACK_POSTS__
   : LOCAL_POSTS;
 
+/* A looping product animation. It plays only while it is on screen, and never
+   for readers who ask for reduced motion: they get the poster, which is the
+   frame that tells the story on its own. */
+const STILL = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const loopWatch = "IntersectionObserver" in window ? new IntersectionObserver(entries => {
+  entries.forEach(({target, isIntersecting}) => {
+    if(isIntersecting){ target.play().catch(()=>{}); } else { target.pause(); }
+  });
+}, {threshold:.35}) : null;
+function wireLoops(root){
+  if(STILL || !loopWatch) return;
+  root.querySelectorAll("video[data-loop]").forEach(v => { v.muted = true; loopWatch.observe(v); });
+}
+
+const vid = (name, label, caption) =>
+  `<figure class="fig vid"><video data-loop muted loop playsinline preload="none" poster="/work/max/${name}.jpg" aria-label="${label}"><source src="/work/max/${name}.mp4" type="video/mp4"></video><figcaption>${caption}</figcaption></figure>`;
+
 const WORK_ITEMS = [
+  {
+    slug:"Case study", meta:"Case study · Beroe · AI product · 2026",
+    path:"/work/max",
+    home:"MAX",
+    /* shared on its own with employers: no links out except to About */
+    standalone:true,
+    backTo:"/about", backLabel:"About Timeyin →",
+    title:"Beroe MAX: agentic AI for procurement",
+    accent:"agentic AI for procurement",
+    byline:"Timeyin Gordon, Lead Design Engineer at Beroe. April–October 2026. About 13 min.",
+    body:`
+<p>MAX is Beroe's procurement advisor. Procurement officers and category managers use it to
+decide what to do next about their suppliers, their contracts and their spend.</p>
+<p class="lede"><strong>In V2 it
+became a 360-degree solution. Every contract, every playbook, every shipment file an organisation
+gives it builds a new skill or sharpens the advisor. And while it learns the organisation, it
+watches the market, through live intelligence we call Signals.</strong></p>
+
+<dl class="facts">
+  <div><dt>Role</dt><dd>Lead Design Engineer</dd></div>
+  <div><dt>Team</dt><dd>Orezimena Onofua, Harold Weaver</dd></div>
+  <div><dt>Timeline</dt><dd>April–October 2026</dd></div>
+  <div><dt>Status</dt><dd>Released to customers</dd></div>
+</dl>
+
+${vid("command-input","A question typed into MAX's command input, MAX's steps ticking off, and an answer arriving with the contract it came from","Ask from any page. MAX shows what it looked up, then answers with the record it used.")}
+<p><em class="todo">Hero animation (#1) still to make; this one stands in.</em></p>
+
+<div class="part"><span class="part-n">Part 1</span><span class="part-t">Context</span></div>
+<h2 data-toc class="feat">The problem</h2>
+<h3 class="claim">Procurement teams weren't short of data. They were drowning in tools.</h3>
+<p>A category manager asks a simple question: what's our exposure to this carrier? The answer lives
+in five places. Spend in one tool. The contract in another. Lane performance in a third. The news
+and the supplier's email somewhere else. Each switch buries the question a little deeper.</p>
+<p>Customers told us V1 was useful "monthly at best, not daily", and some couldn't tell it apart
+from a general chatbot. The gap wasn't missing information. It was a missing place: no single
+place to decide, and no reason to come back every day.</p>
+${vid("tools-drowning","One question breaking into five tool windows that pile up over it, then folding into a single MAX answer that names its five sources","Five tools, one question. MAX reads all five and answers once, naming what it checked.")}
+<p><em class="todo">Source and permission for the "monthly at best" quote.</em></p>
+
+<h2 data-toc class="feat">My role</h2>
+<h3 class="claim">I shaped the engine, designed the experience and built the product.</h3>
+<div class="points">
+<p><strong>The first engine.</strong> I was part of the team that designed and explored MAX's
+initial engine with Kearney, one of the industry leaders in procurement. I built early agents in
+Python and simulated the automations and business logic in n8n, so we could test how the engine
+should behave before anyone built it.</p>
+<p><strong>The interaction concepts.</strong> I designed how people work with MAX: inline
+conversation, Focus mode, category spaces and every other concept on this page.</p>
+<p><strong>Lead Design Engineer.</strong> I worked with Orezimena Onofua and Harold Weaver, and I
+spent most of my time in code. Every concept went into user reviews, every review shaped the next
+build, and every build went back to users.</p>
+<p><strong>An AI-native design system.</strong> I built and ran Max DS V2. Designed in Figma,
+generated in Subframe or written in code, a component looked the same and behaved the same.</p>
+<p><strong>The pipeline.</strong> I designed the route from tokens through Figma and Subframe into
+code, with reviews on the working product. An idea became something testable in days, not weeks.</p>
+</div>
+
+<div class="part"><span class="part-n">Part 2</span><span class="part-t">The work</span></div>
+<p class="part-intro">Nine parts of V2 I designed and built, each one starting from a problem we saw in the product.</p>
+<h2 data-toc class="feat" data-n="01">Focus mode</h2>
+<h3 class="claim">Every page, every object, every sentence is a conversation waiting to happen.</h3>
+<p>Chat used to live on its own page. To ask about an opportunity or a chart, you left what you were
+looking at and explained it all again to a blank box.</p>
+<div class="opts">
+  <div class="opt"><p class="opt-k">Considered</p><p class="opt-t">A separate chat page, or a floating assistant.</p><p>One forgets where you were. The other is always there, but never knows what you're looking at.</p></div>
+  <div class="opt chosen"><p class="opt-k">What we chose</p><p class="opt-t">MAX built into every page.</p><p>Ask from any page, any object, any highlighted sentence. Short answers stay in place. Long answers open in Focus mode, beside the thing you asked about. One click to open it, one click to go back, and the page you were on never goes away.</p></div>
+</div>
+${vid("inline-focus","A short answer on an opportunity page expanding into Focus mode with its table beside the page, then returning","A short answer in place, Open table into Focus mode, and back to the opportunity.")}
+<p>When a question is unclear, MAX does one of three things: it asks, it goes ahead on an assumption
+it states, or it politely declines. And it shows its work, including the lookups that failed.</p>
+
+<h2 data-toc class="feat" data-n="02">Spend in chat</h2>
+<h3 class="claim">Every figure in a spend answer can be checked against its chart.</h3>
+<p>In testing, MAX said things like "more than 4x" and "in 19 days" that weren't in the data. It
+sounded right. It wasn't.</p>
+<p>So we took the maths away from the AI. The system calculates from the real records. The question
+picks the chart. The AI describes only what the chart shows. Point at a figure in the answer and
+the bar behind it lights up.</p>
+${vid("checkable","A logistics spend answer where pointing at each figure lights the chart row it came from","Every figure in the answer sits on its chart. Pointing at one shows where it came from.")}
+<p>Then a last check reads the finished answer. If a number in the text isn't on the chart, MAX
+flags it and offers to try again.</p>
+${vid("figure-check","An answer quoting $462k while its chart shows $426k; the check flags the mismatch and Regenerate fixes it","The answer says $462k, the chart says $426k. The check catches it before anyone acts on it.")}
+
+<blockquote><p>The system does the maths. The chart shows it. The AI explains it.</p></blockquote>
+
+<h2 data-toc class="feat" data-n="03">Artifacts</h2>
+<h3 class="claim">An answer can become the deliverable, with its sources still attached.</h3>
+<p>Procurement work ends in something you hand over: a negotiation brief, a savings model, a deck.
+People copied MAX's answers into other tools, and lost the sources on the way.</p>
+<div class="opts">
+  <div class="opt"><p class="opt-k">Considered</p><p class="opt-t">Export, or a generated file.</p><p>An export breaks the link to the data. A generated file looks finished, but you can't change it.</p></div>
+  <div class="opt chosen"><p class="opt-k">What we chose</p><p class="opt-t">Documents that live inside MAX.</p><p>Docs, sheets, slides and dashboards share one model. MAX drafts one from a conversation. You ask MAX inside it. You accept what it suggests, or you reject it. The draft changes. The sources stay.</p></div>
+</div>
+${vid("answer-doc","Asking MAX to draft a negotiation brief, which opens beside the conversation with each fact linked to its source","Draft a negotiation brief, and it opens beside the conversation with its sources linked.")}
+
+<h2 data-toc class="feat" data-n="04">Charts</h2>
+<h3 class="claim">Six ways of drawing a chart became one visual language.</h3>
+<p>A trend in chat, a mini chart on a card, a chart on an evidence page: each looked different, each
+behaved differently, and MAX couldn't reliably pick or draw any of them. So we built our own
+library on d3 and visx. MAX decides what a chart should say. The library decides how it looks.</p>
+${vid("viz-language","Six mismatched chart styles settling into one consistent chart style, then each emphasising one mark the same way","Six styles become one: the same card, type, colours and source line, and one way to emphasise what matters.")}
+<p>Any chart MAX asks for is checked, fixed or swapped for a safe fallback.</p>
+
+<h2 data-toc class="feat" data-n="05">MAX's character</h2>
+<h3 class="claim">The advisor got a face that tells you what it's doing.</h3>
+<p>People couldn't tell whether MAX was idle or working, finished or stuck. And its sparkle logo
+looked like every other AI product. Now one character appears everywhere, in five states: ready,
+thinking, done, error and unavailable. Screen readers hear each state, and engineers switch it from
+code.</p>
+${vid("states","MAX's animated character moving through ready, thinking, done, error and unavailable","Five states, one character. What you see always matches what MAX is doing.")}
+
+<h2 data-toc class="feat" data-n="06">Home</h2>
+<h3 class="claim">Home is a briefing, not another dashboard.</h3>
+<p>People used to open MAX to a wall of charts and work out for themselves what mattered. A
+dashboard leaves the work to you. A feed of alerts buries it. So Home opens on Max's briefing: a
+few stories about what changed since your last visit, each one linked to what's behind it.</p>
+${vid("briefing","Home's briefing moving through four stories, the copy and artwork changing together","Max's briefing, one story at a time. Resting the pointer holds it.")}
+<p>Below it, Needs you puts every decision waiting on you in one queue: a price move, a stalled
+action, a supplier asking for more, an opportunity. One item at a time, one decision at a time,
+until you're caught up.</p>
+${vid("needs-you","Four different items in the Needs you queue decided one at a time until the queue reads all caught up","Four kinds of decision in one queue, down to You're all caught up.")}
+
+<h2 data-toc class="feat" data-n="07">Loading data</h2>
+<h3 class="claim">Companies load their own data without raising a ticket.</h3>
+<p>Getting data into MAX used to mean a ticket and a wait for Beroe's team. A plain upload would
+have been fast, but fast in the wrong way: errors would go straight into the data. So MAX does the
+first pass, and a person has the last word.</p>
+${vid("data-load","Four files dropped on the upload area; MAX identifies three with its confidence and asks for help with a scanned one","Drop the files and MAX sorts them. When it can't tell, it says why and asks.")}
+<p>The same works from a conversation. Drop a contract into chat and the load runs in the
+background. When MAX needs you, it asks one question at a time, and Decide for me hands a question
+back.</p>
+${vid("chat-clarify","MAX asking what a document is, which supplier it is with and which category it covers, one question at a time","MAX asks only what it can't work out, one question at a time.")}
+<p>One decision here was invisible. A proposed cleanup would have merged Beroe's supplier list with
+each company's own suppliers. I kept them apart, and the links between suppliers, contracts, spend
+and opportunities held.</p>
+
+<h2 data-toc class="feat" data-n="08">Category spaces</h2>
+<h3 class="claim">Each category gets one place where its work happens.</h3>
+<p>A category's spend sat on one page, its contracts on another, its conversations in private chats.
+Now each category has a space. It opens on what needs you, moves to what to act on, and ends with
+what Max has found.</p>
+${vid("space","Switching to the Packaging space, which opens on its headline, then scrolls to the blocks Max arranged","The Packaging space: what needs you first, then what Max has found.")}
+<p>Opportunities are decided inside the space. You review the plan. You give each action an owner.
+And nothing reaches anyone until you accept.</p>
+
+<h2 data-toc class="feat" data-n="09">Threadmark</h2>
+<h3 class="claim">Feedback is pinned to the working product, not to pictures of it.</h3>
+<p>Stakeholder feedback used to arrive as emails about static designs. I built
+Threadmark, a review layer that pins a comment to a place on the
+working page, with a screenshot and a replay. The review lead made it the official feedback channel
+for V2.</p>
+<p>One thread shows why it mattered. A PM's three comments on category ownership became the
+two-step Change owner flow: choose a person, then review the impact. And MAX's suggestion never
+makes one person the busiest on the team.</p>
+
+<div class="part"><span class="part-n">Part 3</span><span class="part-t">Looking back</span></div>
+<h2 data-toc class="feat">Engineering × design</h2>
+<h3 class="claim">Building it in production code changed the design.</h3>
+<p>The working product showed what no mockup could: figures MAX made up, and contract questions
+answered from spend records. Those failures gave us the number check and an eleven-question test.
+After the check went in, 9 of the 11 questions passed. The two that failed failed the same way:
+MAX quoted a figure its chart didn't show.</p>
+<p>The pipeline was AI-assisted, and checked by hand. Every change went from a design reference to
+a build, from the build to the browser, and from the browser to a critique. The browser caught
+what the reports missed: work marked done that wasn't.</p>
+
+<h2 data-toc class="feat">What I learned</h2>
+<h3 class="claim">Trust comes from what you can check, not from how confident it sounds.</h3>
+<p>The most important change in V2 wasn't a screen. It was a rule: the AI doesn't do the
+arithmetic, and every figure sits one glance from its source.</p>
+<h3 class="claim">An advisor belongs where the decision is.</h3>
+<p>Each feature moved MAX closer to the thing being decided: the page, the document, the category.
+That was our answer to "monthly at best". Fewer places to go. More reasons to come back.</p>
+<p><em class="todo">Add the release date and one post-release measure (daily return, or suggestions that led to a decision) once you have it.</em></p>
+`
+  },
   {
     slug:"Case study", meta:"Case study · Beroe · Platform architecture · 2024",
     path:"/work/search-as-home",
@@ -2063,89 +2344,116 @@ Autonomize — and the diagnostic question that places a product on the ladder.<
 const ABOUT = {
   slug:"About", sign:true,
   path:"/about",
-  title:"About, and what eight years added up to.",
-  accent:"what eight years added up to",
-  byline:"Timeyin Gordon — product design engineer, Lagos.",
+  /* for now About leads back to the MAX case study, the page shared with employers */
+  backTo:"/work/max", backLabel:"← Beroe MAX",
+  title:"About, and what 11 years added up to.",
+  accent:"what 11 years added up to",
+  byline:"Timeyin Gordon — product design engineer.",
   flat:true,
   intro:`
-<p>I am a product design engineer, tinkerer and indie maker. I design agentic products and build
-them in code, which is one job to me and two on most org charts.</p>
+<p>I'm a product design engineer. I design agentic products, I build them in code, and I stay
+for the part where they ship. To me that's one job; on most org charts it's two. Whatever the
+product, the work comes down to one thing: turning a complex system into something a person can
+trust enough to act on.</p>
 
-<div class="cta">
-<p>Relocating to Canada and open to senior design-engineering roles. Eligible for the Global Talent
-Stream under NOC 21233 — a ten-business-day LMIA and a two-week work permit.</p>
-<p>To hire me or just to argue about interfaces,
-<a href="mailto:gtimeyin@gmail.com">gtimeyin@gmail.com</a>.</p>
-</div>
+<figure class="fig portrait" style="width:min(440px,100%)"><img src="/about/portrait.jpg" alt="Timeyin Gordon standing in front of the Museum of the Future, beside a large mirrored sculpture" loading="lazy"><figcaption>Off the clock, at the Museum of the Future.</figcaption></figure>
 
 <h2 data-toc class="sec">The story</h2>
-<p>My journey started with curiosity. I was born in Sapele, a small city in rural Nigeria, where
-life was humble but filled with glimmers of possibility. One of my earliest memories is of the
-magic box — our family television. I was so curious about the moving images and sounds coming out
-of it that I pried it open to see the electronic world within.</p>
-<p>I did not understand the maze of wires and circuit boards. But the instinct to open the thing
-rather than admire it never went anywhere, and it eventually led me into computer science, design
-and animation.</p>
-<p>Over the past eight years I have moved across industries — from communication campaigns for
-social causes, to interactive experiences and design systems for global fintech, to procurement
-intelligence platforms. Every step deepened the same habit: take the thing apart, find out how it
-works, put it back together better.</p>
+<p>It started with curiosity. One of my earliest memories is of the family television, the magic
+box. I wanted to know where the pictures came from, where the sound came from, where the magic
+came from. So I opened it up. I didn't understand the wires. I didn't understand the circuit
+boards. But I understood that I'd rather open a thing than admire it, and that instinct
+stayed.</p>
+<p>It took me into computer science. I studied it at university and spent a good part of school in
+programming competitions, where you learn fast that a clever solution counts for nothing if it
+doesn't run. From code I moved to design, from design to animation, and from animation back to
+code. I never really left.</p>
+<p>That instinct has carried me through 11 years and three very different kinds of work. In social
+causes, a message had to change what people did, not just what they knew. In fintech, I built
+interactive experiences and design systems for insurance and financial products. In procurement,
+at Beroe, the decisions are large, the data is messy and the stakes are real.</p>
+<p>Somewhere along the way I stopped treating design and engineering as separate jobs. Today the
+work happens in three places: on the page, in the code, and sometimes in your hands.</p>
 
-<h2 data-toc class="sec">01 — Designer</h2>
-<div class="facet">
-<h3 class="claim">Turning complexity into something a person can act on.</h3>
+<h2 data-toc class="sec">What I do</h2>
+<h3 class="claim">I design for decisions.</h3>
 <p>Journey architecture, design systems, data visualisation, and the interfaces where an AI system
-has to earn the right to be trusted.</p>
-<div class="figrow"><div class="box"><span>Working session or whiteboard</span></div><div class="box"><span>Design system in Figma</span></div><div class="box"><span>Shipped product surface</span></div></div>
-</div>
+has to earn trust rather than ask for it. At Beroe that meant MAX, an advisor procurement teams use
+to decide what to do next about their suppliers, their contracts and their spend.</p>
 
-<h2 data-toc class="sec">02 — Engineer</h2>
-<div class="facet">
-<h3 class="claim">I build the thing I designed, in React, and stay for the part where it ships.</h3>
-<p>React, TypeScript and Tailwind, with an agent doing the mechanical half and every diff reviewed.
-The design file and the coded component are one system, not two.</p>
-<div class="figrow"><div class="box"><span>Code and canvas side by side</span></div><div class="box"><span>Component library</span></div><div class="box"><span>Terminal or agent workflow</span></div></div>
-</div>
+<h3 class="claim">I build what I design.</h3>
+<p>I know this sounds like a cliché now. With AI in every workflow, every designer seems to be
+becoming a design engineer. I came from the other side. Most designers are learning to code; I was
+a coder who learned to design.</p>
+<p>I work in React, TypeScript and Tailwind. The agent does the mechanical half; I review every
+change. The design file and the coded component are one system, not two. A mockup shows what
+should happen. A build shows what does.</p>
 
-<h2 data-toc class="sec">03 — Maker</h2>
-<div class="facet">
-<h3 class="claim">Some things should be objects you can hold.</h3>
-<p>A card game rooted in African folklore, currently live on Kickstarter. Physical products have a
-discipline software does not: once it goes to print, every ambiguity is permanent.</p>
-<div class="figrow"><div class="box"><span>Your Village People cards</span></div><div class="box"><span>Print production</span></div><div class="box"><span>Playtesting at a table</span></div></div>
-</div>
+<h3 class="claim">And sometimes I make things you can hold.</h3>
+<p>Your Village People is a card game rooted in African folklore, now live on Kickstarter. Software
+forgives; print doesn't. Once it goes to press, every ambiguity is permanent, every typo is
+printed and every rule is final.</p>
+<figure class="fig loop-square"><video data-loop muted loop playsinline preload="none" poster="/about/motion/village-people.jpg" aria-label="The Your Village People card game box on a rock, surrounded by drifting red and pink smoke"><source src="/about/motion/village-people.mp4" type="video/mp4"></video><figcaption>Your Village People, the card game.</figcaption></figure>
+<figure class="fig"><img src="/about/at-work.jpg" alt="Timeyin Gordon at a table with six friends, one of them holding up a Your Village People card" loading="lazy"><figcaption>Showing Your Village People to friends.</figcaption></figure>
 
-<h2 data-toc class="sec">04 — Off the clock</h2>
-<div class="facet">
-<h3 class="claim">Houdini node graphs, Cinema 4D, and a visual diary nobody asked for.</h3>
-<p>Motion studies, 3D experiments, and writing Field Notes about the gap between what tools can do
-and what we actually understand.</p>
-<div class="figrow"><div class="box"><span>3D and motion experiments</span></div><div class="box"><span>Houdini node graph</span></div><div class="box"><span>Lagos, off the clock</span></div></div>
-<p><em class="todo">Swap these twelve slots for real photographs — this page is the one place on
-the site where images are about you rather than the work.</em></p>
+<h2 data-toc class="sec">In another life</h2>
+<h3 class="claim">Before product work took over, I was a motion designer.</h3>
+<p>I spent years in Cinema 4D and Houdini making product renders, characters and type that grows
+out of moss and flowers. Motion taught me timing. Light taught me focus. Short formats taught me
+to land an idea in a few seconds. I still use all three every time an interface has to move.</p>
+<div class="gallery two">
+<video data-loop muted loop playsinline preload="none" poster="/about/motion/flowers.jpg" aria-label="A wooden number seven bursting into colourful flowers"><source src="/about/motion/flowers.mp4" type="video/mp4"></video>
+<video data-loop muted loop playsinline preload="none" poster="/about/motion/moss.jpg" aria-label="Lettering forming out of glowing green moss"><source src="/about/motion/moss.mp4" type="video/mp4"></video>
 </div>
+<div class="gallery three">
+<img src="/about/motion/render-1.jpg" alt="A neon lion statue between glowing symbols" loading="lazy">
+<img src="/about/motion/render-2.jpg" alt="An ornate gold vessel with black spheres" loading="lazy">
+<img src="/about/motion/render-3.jpg" alt="A robot assembled on a workshop turntable" loading="lazy">
+<img src="/about/motion/render-4.jpg" alt="A chilli pepper character in a sombrero" loading="lazy">
+<img src="/about/motion/render-5.jpg" alt="An armoured rhino on a porcelain rock" loading="lazy">
+<img src="/about/motion/render-6.jpg" alt="A glossy green camera icon" loading="lazy">
+</div>
+<p class="gallery-cap">From my visual diary: 3D and motion experiments.</p>
+<p>I still keep that diary going. Off the clock I'm usually in Houdini, or writing Field Notes about
+the gap between what our tools can do and what we actually understand.</p>
 
 <h2 data-toc class="sec">Experience</h2>`,
   items:[
-    { marker:"2022–", title:"Beroe Inc — Product Design Lead",
+    { marker:"2022–till date", title:"Beroe Inc", role:"Lead Design Engineer",
       meta:"Agentic procurement intelligence" },
-    { marker:"2018–", title:"Neuro 6 — Creative Director",
-      meta:"Independent studio · Lagos and Nairobi" },
-    { marker:"2021–22", title:"Tangerine Life — Interaction Designer",
+    { marker:"2018–till date", title:"Neuro 6", role:"Creative Director",
+      meta:"Independent studio" },
+    { marker:"2021–22", title:"Tangerine Life", role:"Interaction Designer",
       meta:"Fintech and insurance" },
-    { marker:"2015–18", title:"Center for Communication & Social Impact — Creative Lead",
+    { marker:"2015–18", title:"Center for Communication & Social Impact", role:"Creative Lead",
       meta:"Communication campaigns for social causes" }
   ],
   outro:`
 <h2 data-toc class="sec">Education</h2>
-<p class="line">MA, Digital Management — Hyper Island. Scenario planning, team leadership and
-designing for future conditions. Computer science before that.</p>
+<div class="rows">
+  <div class="row flat">
+    <span class="mk">MA</span>
+    <span><h3>Hyper Island, Sweden</h3><p class="m">Scenario planning · team leadership · designing for future conditions</p></span>
+    <p class="role">Digital Management</p>
+  </div>
+  <div class="row flat">
+    <span class="mk">Bachelor's</span>
+    <span><h3>University of Benin</h3><p class="m">Programming competitions while in school</p></span>
+    <p class="role">Computer Science</p>
+  </div>
+</div>
 
 <h2 data-toc class="sec">Stack</h2>
-<p class="set">Figma · Framer · React · TypeScript · Tailwind · Cinema 4D · Houdini · n8n · Notion</p>
+<p class="set">Figma · Framer · React · TypeScript · Python · Tailwind · Cinema 4D · Houdini · n8n · Notion</p>
 
 <h2 data-toc class="sec">Résumé</h2>
-<p class="line"><a href="https://drive.google.com/file/d/1cnmWuRJlxTkVwr3f-Nc6-Zqs34mHbKE0/view?usp=sharing">Download PDF →</a></p>`
+<p class="line"><a href="https://drive.google.com/file/d/1cnmWuRJlxTkVwr3f-Nc6-Zqs34mHbKE0/view?usp=sharing">Download PDF →</a></p>
+
+<h2 data-toc class="sec">Get in touch</h2>
+<div class="cta">
+<p>I'm open to senior design-engineering roles. Write to me to talk about one, to trade notes, or
+just to argue about AI models and interfaces: <a href="mailto:gtimeyin@gmail.com">gtimeyin@gmail.com</a>.</p>
+</div>`
 };
 
 
@@ -2278,11 +2586,14 @@ function nextHTML(e){
 const SIGNOFF = `
 <div class="signoff">
   <p class="sig">Thank you for reading</p>
-  <p class="after">Timeyin Gordon — product design engineer, Lagos · relocating to Canada ·
+  <p class="after">Timeyin Gordon — product design engineer ·
     <a href="mailto:gtimeyin@gmail.com">gtimeyin@gmail.com</a></p>
 </div>`;
 
 function render(el, e){
+  body.classList.toggle("standalone", !!e.standalone);
+  body.dataset.backTo = e.backTo || "";
+  el.querySelector(".r-back").textContent = e.backLabel || "← Back";
   el.querySelector(".r-slug").textContent = e.slug || "";
   $("rtype").textContent = e.slug || "Reading";
   el.querySelector(".r-title").innerHTML = e.tabs ? "" :
@@ -2300,6 +2611,7 @@ function render(el, e){
       ${flat?`<div class="row flat" data-i="${i}">`:`<a class="row" href="${it.path}" data-i="${i}">`}
         <span class="mk">${it.marker||String(i+1).padStart(2,"0")}</span>
         <span><h3>${it.title}</h3><p class="m">${it.meta}</p></span>
+        ${it.role?`<p class="role">${it.role}</p>`:""}
         ${flat?"":`<svg class="ar" width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true"><path d="M3 12L12 3M12 3H5.5M12 3v6.5" stroke="currentColor" stroke-width="1.1"/></svg>`}
       ${flat?"</div>":"</a>"}`).join("") + `</div>`;
 
@@ -2324,11 +2636,13 @@ function render(el, e){
     paint();
   } else if(e.items){
     bodyEl.innerHTML = (e.intro||"") + rowsHTML(e.items, e.flat) + (e.outro||"") + (e.sign ? SIGNOFF : "");
+    wireLoops(bodyEl);
     if(!e.flat) bodyEl.querySelectorAll(".row").forEach(row=>{
       row.addEventListener("click",event=>{ event.preventDefault(); push(e.items[+row.dataset.i]); });
     });
   } else {
-    bodyEl.innerHTML = (e.body || "") + SIGNOFF + nextHTML(e);
+    bodyEl.innerHTML = (e.body || "") + SIGNOFF + (e.standalone ? "" : nextHTML(e));
+    wireLoops(bodyEl);
     const nx = bodyEl.querySelector(".next-row");
     if(nx) nx.addEventListener("click",event=>{ event.preventDefault(); const n=neighbour(e); if(n) swap(n); });
   }
@@ -2372,7 +2686,11 @@ function routeBack(){
 }
 
 SHEETS.forEach(el=>{
-  el.querySelector(".r-back").addEventListener("click",ev=>{ ev.stopPropagation(); routeBack(); });
+  el.querySelector(".r-back").addEventListener("click",ev=>{
+    ev.stopPropagation();
+    if(body.dataset.backTo){ location.href=body.dataset.backTo; return; }
+    routeBack();
+  });
   el.addEventListener("scroll",()=>{ if(el===active) progress(); });
 });
 
@@ -2922,6 +3240,7 @@ if(PLAYGROUND_ENABLED){
 
 document.addEventListener("keydown",e=>{
   if(e.key!=="Escape")return;
+  if(body.dataset.backTo) return;
   if(PLAYGROUND_ENABLED && body.classList.contains("desk")) toPage();
   else if(body.classList.contains("reading")) routeBack();
   else if(PLAYGROUND_ENABLED) toDesk();

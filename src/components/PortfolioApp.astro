@@ -334,6 +334,12 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
   }
   .prose .points{margin:0 0 1.9em}
   .prose .points p{margin:0 0 1.25em}
+  .prose .points{margin-top:1.6em}
+  .prose .points p.pt-h{margin:1.9em 0 .4em; font-family:var(--display); font-size:1.22em;
+    line-height:1.2; color:var(--ink)}
+  .prose .points p.pt-h:first-child{margin-top:0}
+  .prose .points .pt-n{font-family:var(--util); font-size:.6em; font-weight:600; letter-spacing:.08em;
+    color:var(--accent); margin-right:12px; vertical-align:.15em}
   /* The title sits at the page margin, the prose is indented, and the moments that
      matter — lede, pull quote, sign-off, next — return to the margin. The piece is
      framed by its own left edge. */
@@ -1391,21 +1397,32 @@ ${vid("tools-drowning","One question breaking into five tool windows that pile u
 <p><em class="todo">Source and permission for the "monthly at best" quote.</em></p>
 
 <h2 data-toc class="feat">My role</h2>
-<h3 class="claim">I shaped the engine, designed the experience and built the product.</h3>
+<h3 class="claim">Four things I understood early, and what each one changed.</h3>
+<p>I led the design of MAX V2 and built much of it myself, from the first engine to the release.
+The work rested on a few convictions about how an AI advisor earns trust. Each one changed how we
+worked, and what we shipped.</p>
 <div class="points">
-<p><strong>The first engine.</strong> I was part of the team that designed and explored MAX's
-initial engine with Kearney, one of the industry leaders in procurement. I built early agents in
-Python and simulated the automations and business logic in n8n, so we could test how the engine
-should behave before anyone built it.</p>
-<p><strong>The interaction concepts.</strong> I designed how people work with MAX: inline
-conversation, Focus mode, category spaces and every other concept on this page.</p>
-<p><strong>Lead Design Engineer.</strong> I worked with Orezimena Onofua and Harold Weaver, and I
-spent most of my time in code. Every concept went into user reviews, every review shaped the next
-build, and every build went back to users.</p>
-<p><strong>An AI-native design system.</strong> I built and ran Max DS V2. Designed in Figma,
-generated in Subframe or written in code, a component looked the same and behaved the same.</p>
-<p><strong>The pipeline.</strong> I designed the route from tokens through Figma and Subframe into
-code, with reviews on the working product. An idea became something testable in days, not weeks.</p>
+<p class="pt-h"><span class="pt-n">01</span>Shaping the engine</p>
+<p><strong>How an agent behaves is a design problem before it is an
+engineering one.</strong> So before engineering committed to anything, I helped shape MAX's first
+engine with Kearney, one of procurement's leading consultancies. I built early agents in Python and
+simulated the automations and business logic in n8n. We settled how MAX should behave while it was
+still cheap to change.</p>
+<p class="pt-h"><span class="pt-n">02</span>Designing in code</p>
+<p><strong>AI products have to be designed in the real thing.</strong>
+A mockup always shows the right answer. Only a working product shows what the model actually does.
+So I designed V2 in production code, every concept on this page, and that is where we saw MAX making
+up figures. It led to V2's central rule: the system does the maths, and the AI only explains it.</p>
+<p class="pt-h"><span class="pt-n">03</span>An AI-native design system</p>
+<p><strong>When AI helps build the interface, the design system is the
+quality control.</strong> I built Max DS V2 so a component looks and behaves the same whether it is
+designed in Figma, generated in Subframe or written in code. A pipeline from tokens into code took
+an idea to something users could test in days, not weeks.</p>
+<p class="pt-h"><span class="pt-n">04</span>Reviewing the working product</p>
+<p><strong>Feedback is only useful where the work actually is.</strong>
+Comments on static designs describe a product that doesn't exist yet. So I built Threadmark, which
+pins feedback to the working product. It became V2's official review channel, and its threads
+turned into shipped flows like Change owner.</p>
 </div>
 
 <div class="part"><span class="part-n">Part 2</span><span class="part-t">The work</span></div>

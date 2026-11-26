@@ -1530,10 +1530,15 @@ makes one person the busiest on the team.</p>
 
 <div class="part"><span class="part-n">Part 3</span><span class="part-t">Looking back</span></div>
 <h2 data-toc class="feat">Engineering × design</h2>
-<h3 class="claim">Building it in production code changed the design.</h3>
-<p>The working product showed what no mockup could: figures MAX made up, and contract questions
-answered from spend records. Those failures gave us the number check and an eleven-question test.
-After the check went in, 9 of the 11 questions passed. The two that failed failed the same way:
+<h3 class="claim">I built MAX as a working prototype, and it changed the design.</h3>
+<p>A mockup of an AI product always shows the answer you hoped for. So I built MAX as a prototype in
+code, with real business logic, real language models and real agents: agents that looked things up,
+called tools and answered questions end to end, on demo data. Every design idea could be tried
+against what the model actually did, not what we imagined it would do.</p>
+<p>The prototype showed what no mockup could. MAX made up figures that sounded right, and answered
+contract questions from spend records. Those failures became design decisions: a number check that
+compares every figure in an answer with its chart, and an eleven-question test we ran after each
+change. With the check in place, 9 of the 11 questions passed. Both failures had the same cause:
 MAX quoted a figure its chart didn't show.</p>
 <p>The pipeline was AI-assisted, and checked by hand. Every change went from a design reference to
 a build, from the build to the browser, and from the browser to a critique. The browser caught

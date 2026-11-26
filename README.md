@@ -56,7 +56,9 @@ The site uses Vercel Web Analytics. The initial page load is tracked by the
 Astro integration, and History API transitions emit an additional pageview so
 the animated sheet navigation is represented accurately. It also records
 content opens, résumé and contact clicks, Substack subscriptions and relevant
-outbound project clicks. Custom events require a supporting Vercel plan. Web
+outbound project clicks. Visits to `/work/max` and `/about` also emit a
+`key_page_visit` event with `page` (`max` or `about`) and `source` (the
+`utm_source`, the referring site, `direct`, or `internal`). Custom events require a supporting Vercel plan. Web
 Analytics must also be enabled in the Vercel project's **Analytics** tab.
 
 ## Deploy to Vercel

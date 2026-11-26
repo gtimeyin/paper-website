@@ -40,9 +40,39 @@ const socialImageUrl = new URL("/og.jpg", Astro.site || Astro.url.origin);
 <script>
   import { pageview, track } from "@vercel/analytics";
 
+  // The two pages shared with employers get their own event, so visits are easy to
+  // filter in Vercel's Events tab alongside where the visitor came from.
+  const KEY_PAGES: Record<string, string> = { "/work/max": "max", "/about": "about" };
+  let lastKeyPath = "";
+
+  const trackKeyPage = (path: string, initial: boolean) => {
+    const clean = path.replace(/\/+$/, "") || "/";
+    const page = KEY_PAGES[clean];
+    if (!page) {
+      lastKeyPath = "";
+      return;
+    }
+    if (clean === lastKeyPath) return;
+    lastKeyPath = clean;
+
+    let source = "internal";
+    if (initial) {
+      const utm = new URLSearchParams(window.location.search).get("utm_source");
+      let referrerHost = "";
+      try {
+        referrerHost = document.referrer ? new URL(document.referrer).hostname : "";
+      } catch {}
+      source = utm || (referrerHost && referrerHost !== window.location.hostname ? referrerHost : "direct");
+    }
+    track("key_page_visit", { page, source });
+  };
+
+  trackKeyPage(window.location.pathname, true);
+
   window.addEventListener("portfolio:navigate", (event) => {
     const path = (event as CustomEvent<string>).detail;
     pageview({ route: path, path });
+    trackKeyPage(path, false);
   });
 
   document.addEventListener("click", (event) => {
